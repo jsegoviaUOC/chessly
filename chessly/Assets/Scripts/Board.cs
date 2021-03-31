@@ -30,6 +30,11 @@ public class Board : MonoBehaviour
     // Creació del tauler
     public void Create()
     {
+        xLimit = 10;
+        yLimit = 10;
+
+        mAllCells = new Cell[xLimit, yLimit];
+
         for (int y = 0; y < yLimit; y++)
         {
             for (int x = 0; x < xLimit; x++)
