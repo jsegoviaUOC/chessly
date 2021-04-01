@@ -15,13 +15,7 @@ public class PieceManager : MonoBehaviour
     private List<BasePiece> mBlackPieces = null;
     private List<BasePiece> mPromotedPieces = new List<BasePiece>();
 
-    // Array de l'ordre de les peces en el joc classic (pendent de canviar)
-    private string[] mPieceOrder = new string[16]
-    {
-        "P", "P", "P", "P", "P", "P", "P", "P",
-        "T", "KN", "B", "Q", "K", "B", "KN", "T"
-    };
-
+    // Array de l'ordre de les peces en el joc (pendent de fer el tamany dinàmic)
     private string[] mWhitePiecesOrder = new string[16];
     private string[] mBlackPiecesOrder = new string[16];
     private string[] mAuxiliarPiecesOrder = new string[16];
@@ -45,12 +39,12 @@ public class PieceManager : MonoBehaviour
 
     public void Setup(Board board)
     {
-        // Llistat de peces incials de cada color (actualment per defecte)
-        mWhitePiecesOrder = mPieceOrder;
-        mBlackPiecesOrder = mPieceOrder;
+        // Llistat de peces incials de cada color
+        mWhitePiecesOrder = GameManager.mPieces;
+        mBlackPiecesOrder = GameManager.mPieces;
 
         // Creació de les peces blanques i negres
-        mWhitePieces = CreatePieces(Color.white, new Color32(213, 198, 125, 255));
+        mWhitePieces = CreatePieces(Color.white, new Color32(239, 239, 239, 255));
         mBlackPieces = CreatePieces(Color.black, new Color32(31, 30, 24, 255));
 
         // Colocació inicial
@@ -115,13 +109,13 @@ public class PieceManager : MonoBehaviour
     private void PlacePieces(int frontRow, int backRow, List<BasePiece> pieces, Board board)
     {
         // Per a cada fila (del tauler estandar)
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < mAuxiliarPiecesOrder.Length / 2; i++)
         {
             // Posició de les peces frontals  
-            pieces[i].Place(board.mAllCells[i, frontRow]);
+            pieces[i].Place(board.mAllCells[i + GameManager.xMargin, frontRow]);
 
             // Posició de les peces traseres  
-            pieces[i + 8].Place(board.mAllCells[i, backRow]);
+            pieces[i + mAuxiliarPiecesOrder.Length / 2].Place(board.mAllCells[i + GameManager.xMargin, backRow]);
         }
     }
 

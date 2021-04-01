@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -14,6 +15,16 @@ public class GameManager : MonoBehaviour
     // Proporcions del tauler
     public int xAxis;
     public int yAxis;
+    public static int xMargin;
+
+    // Llistat de peces
+    private string[] mTypePieces = new string[5]
+    {
+        "P","T", "KN", "B", "Q"
+    };
+
+    // Array de l'ordre de les peces en el joc (pendent de fer el tamany dinàmic)
+    public static string[] mPieces = new string[16];
 
     // S'executa al iniciar l'escena
     void Start()
@@ -28,26 +39,77 @@ public class GameManager : MonoBehaviour
         mPieceManager.Setup(mBoard);
     }
 
-    // Retorn al menu principal
-    public void BackMenu()
-    {
-        // Carrega la escena del menu principal
-        SceneManager.LoadScene("Main Menu");
-    }
-
     // Funció per definir el tipus de joc
     public void typeGame()
     {
-        if (GameButton.typeGame == 0)
+        // Joc clàssic
+        switch (GameButton.typeGame)
         {
+            case 1:
+
+                xMargin = Random.Range(0, 3);
+                xAxis = 8 + xMargin * 2;
+                yAxis = Random.Range(5, 8);
+
+                // Array de l'ordre de les peces en el joc random
+                int pieceRand = Random.Range(0, 5);
+
+                for (int i = 0; i < 16; i++)
+                {
+                    mPieces[i] = mTypePieces[pieceRand];
+                    pieceRand = Random.Range(0, 5);
+                }
+
+                // Es força el rei en la cel·la estàndar
+                mPieces[12] = "K";
+
+                break;
+            default:
+
+                xMargin = 0;
+                xAxis = 8;
+                yAxis = 8;
+
+                // Array de l'ordre de les peces en el joc classic
+                mPieces = new string[16]
+                {
+                    "P", "P", "P", "P", "P", "P", "P", "P",
+                    "T", "KN", "B", "Q", "K", "B", "KN", "T"
+                };
+
+                break;
+        }
+        /*if (GameButton.typeGame == 0)
+        {
+            xMargin = 0;
             xAxis = 8;
             yAxis = 8;
+
+            // Array de l'ordre de les peces en el joc classic
+            mPieces = new string[16]
+            {
+                "P", "P", "P", "P", "P", "P", "P", "P",
+                "T", "KN", "B", "Q", "K", "B", "KN", "T"
+            };
         }
-        else
+        else if (GameButton.typeGame == 1) // Joc random
         {
-            xAxis = Random.Range(8, 10);
-            yAxis = Random.Range(6, 9);
-        }
+            xMargin = Random.Range(0, 3);
+            xAxis = 8 + xMargin * 2;
+            yAxis = Random.Range(5, 8);
+
+            // Array de l'ordre de les peces en el joc random
+            int pieceRand = Random.Range(0, 5);
+
+            for( int i = 0; i < 16; i++)
+            {
+                mPieces[i] = mTypePieces[pieceRand];
+                pieceRand = Random.Range(0, 5);
+            }
+
+            // Es força el rei en la cel·la estàndar
+            mPieces[12] = "K";
+        }*/
     }
 
 }

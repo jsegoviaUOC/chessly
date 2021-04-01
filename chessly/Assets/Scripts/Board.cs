@@ -53,7 +53,7 @@ public class Board : MonoBehaviour
                 // seguint el patró classic, canvi de color de les cel·les
                 if( (x + y) % 2 == 0)
                 {
-                    mAllCells[x, y].GetComponent<Image>().color = new Color32(193, 137, 93, 255);
+                    mAllCells[x, y].GetComponent<Image>().color = new Color32(95, 95, 95, 255);
                 }
             }
         }
