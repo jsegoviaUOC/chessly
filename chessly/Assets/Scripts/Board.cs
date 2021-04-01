@@ -20,18 +20,18 @@ public class Board : MonoBehaviour
     // Prefab del la cel·la
     public GameObject mCellPrefab;
 
-    // Limits del tauler
-    static int xLimit = 8;
-    static int yLimit = 8;
+    // Limits del tauler (per defualt 8)
+    public static int xLimit = 8;
+    public static int yLimit = 8;
 
-    // Configuració clàssica del tauler (8 x 8)
+    // Configuració clàssica del tauler (per default 8 x 8)
     public Cell[,] mAllCells = new Cell[xLimit, yLimit];
 
     // Creació del tauler
-    public void Create()
+    public void Create(int xAxis, int yAxis)
     {
-        xLimit = 10;
-        yLimit = 10;
+        xLimit = xAxis;
+        yLimit = yAxis;
 
         mAllCells = new Cell[xLimit, yLimit];
 

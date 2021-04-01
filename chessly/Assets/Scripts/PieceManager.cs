@@ -55,7 +55,7 @@ public class PieceManager : MonoBehaviour
 
         // Colocació inicial
         PlacePieces(1, 0, mWhitePieces, board);
-        PlacePieces(6, 7, mBlackPieces, board);
+        PlacePieces(Board.yLimit - 2, Board.yLimit-1, mBlackPieces, board);
 
         // Inici del torn de les blanques
         SwitchPlayer(Color.black);
