@@ -1,0 +1,34 @@
+{
+	"menu": {
+		"options" : {
+			"ReturnMenuButton" : "Tornar al menú",
+			"LangEngButton" : "Anglés",
+			"LangCatButton" : "Català",
+			"SelectLanguageText" : "Tria l'idioma",
+			"SelectWhitePiecesColorText" : "Color Peces Blanques",
+			"SelectBlackPiecesColorText" : "Color Peces Negres",
+			"SelectBoardColorText" : "Color del Tauler",
+			"whitePiecesColor" : {
+				"PW" : "Blanc Pur",
+				"IV" : "Ivori",
+				"SB" : "Blau Cel"
+			},
+			"blackPiecesColor" : {
+				"PB" : "Negre Pur",
+				"EB" : "Banús",
+				"DR" : "Vermell Fosc"
+			},
+			"boardColor" : {
+				"BW" : "Blanc i Negre",
+				"WC" : "Color Fusta",
+				"NE" : "Neons"
+			}
+		},
+		"general" : {
+			"ClassicButton" : "Joc Clàssic",
+			"NonClassicButton" : "Joc a l'Atzar",
+			"QuitButton" : "Sortir",
+			"OptionsButton" : "Opcions"
+		}
+	}
+}

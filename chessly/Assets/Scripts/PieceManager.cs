@@ -10,6 +10,12 @@ public class PieceManager : MonoBehaviour
     // Prefab de les peces
     public GameObject mPiecePrefab;
 
+    // Recuadre de text amb informació de la partida
+    public GameObject textDisplayCanvas;
+
+    // Controla el color del juagdor actual
+    public Color currentColor;
+
     // Creació llista de peces
     private List<BasePiece> mWhitePieces = null;
     private List<BasePiece> mBlackPieces = null;
@@ -39,6 +45,9 @@ public class PieceManager : MonoBehaviour
 
     public void Setup(Board board)
     {
+        // Es deshabilita el recuadre informatiu de la partida
+        textDisplayCanvas.GetComponent<Canvas>().enabled = false;
+
         // Llistat de peces incials de cada color
         mWhitePiecesOrder = GameManager.mPieces;
         mBlackPiecesOrder = GameManager.mPieces;
@@ -52,7 +61,8 @@ public class PieceManager : MonoBehaviour
         PlacePieces(Board.yLimit - 2, Board.yLimit-1, mBlackPieces, board);
 
         // Inici del torn de les blanques
-        SwitchPlayer(Color.black);
+        currentColor = Color.black;
+        SwitchPlayer();
     }
 
     // Funció per crear les peces de tot un color
@@ -129,7 +139,7 @@ public class PieceManager : MonoBehaviour
     }
 
     // Funció per canviar de torn
-    public void SwitchPlayer(Color previousColor)
+    public void SwitchPlayer()
     {
         // Si la partida ha acabat
         if (isEndGame)
@@ -141,11 +151,14 @@ public class PieceManager : MonoBehaviour
             isEndGame = false;
 
             // Es canvia el color del jugador en torn per asegurar que el blanc comença la següent partida
-            previousColor = Color.black;
+            currentColor = Color.black;
+
+            // Es posa el text per defecte del botó del recuadre d'informació
+            GameObject.Find("OkButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Ok";
         }
 
         // Es comprova de qui es el torn i s'ativen les peces d'aquest color i es desactiven les de l'altre
-        if (previousColor != Color.white)
+        if (currentColor != Color.white)
         {
             changeStateActivePieces(mWhitePieces, true);
             changeStateActivePieces(mBlackPieces, false);
@@ -161,6 +174,9 @@ public class PieceManager : MonoBehaviour
                     piece.enabled = false;
                 }
             }
+
+            // S'actualitza el color del jugador actual
+            currentColor = Color.white;
         }
         else
         {
@@ -178,7 +194,11 @@ public class PieceManager : MonoBehaviour
                     piece.enabled = false;
                 }
             }
+            
+            // S'actualitza el color del jugador actual
+            currentColor = Color.black;
         }
+
     }
 
     // Funció per a resetejar de peces al final de la partida
@@ -219,4 +239,42 @@ public class PieceManager : MonoBehaviour
         // S'afegeix la peça promocionada a la matriu corresponent
         mPromotedPieces.Add(promotedPiece);
     }
+
+    // Funció per activar el recuadre de text amb informació de la partida
+    public void ShowTextInfo()
+    {
+        // Es dehabiliten els moviments de les peces i el botó per sortir de la partida
+        changeStateActivePieces(mWhitePieces, false);
+        changeStateActivePieces(mBlackPieces, false);
+        GameObject.Find("ButtonSpace").GetComponent<Canvas>().enabled = false;
+
+        // Si el joc ha acabat el text que es mostra és diferent
+        if (isEndGame)
+        {
+            string textColor = currentColor == Color.white ? "white" : "black";
+            textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Congratulations " + textColor + " player!\nYou win";
+            GameObject.Find("OkButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "New Game";
+        }
+        else
+        {
+            string textColor = currentColor == Color.white ? "black" : "white";
+            textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Is "+ textColor + " player turn";
+        }
+
+        // Es mostra el recuadre d'informació
+        textDisplayCanvas.GetComponent<Canvas>().enabled = true;
+
+    }
+
+    // Funció per tancar el recuadre de text
+    public void CloseTextInfo()
+    {
+        // Finalitza el turn del color actual
+        SwitchPlayer();
+
+        // S'habiliten i deshabiliten els botons i recuadres de text pertinents
+        textDisplayCanvas.GetComponent<Canvas>().enabled = false;
+        GameObject.Find("ButtonSpace").GetComponent<Canvas>().enabled = true;
+    }
+
 }

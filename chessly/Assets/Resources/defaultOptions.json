@@ -1,0 +1,8 @@
+{
+	"colors": {
+		"whitePiecesColor" : "PW",
+		"blackPiecesColor" : "PB",
+		"boardColor" : "BW",
+	},
+	"language" : "en"
+}

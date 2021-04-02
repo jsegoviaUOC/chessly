@@ -79,37 +79,7 @@ public class GameManager : MonoBehaviour
 
                 break;
         }
-        /*if (GameButton.typeGame == 0)
-        {
-            xMargin = 0;
-            xAxis = 8;
-            yAxis = 8;
-
-            // Array de l'ordre de les peces en el joc classic
-            mPieces = new string[16]
-            {
-                "P", "P", "P", "P", "P", "P", "P", "P",
-                "T", "KN", "B", "Q", "K", "B", "KN", "T"
-            };
-        }
-        else if (GameButton.typeGame == 1) // Joc random
-        {
-            xMargin = Random.Range(0, 3);
-            xAxis = 8 + xMargin * 2;
-            yAxis = Random.Range(5, 8);
-
-            // Array de l'ordre de les peces en el joc random
-            int pieceRand = Random.Range(0, 5);
-
-            for( int i = 0; i < 16; i++)
-            {
-                mPieces[i] = mTypePieces[pieceRand];
-                pieceRand = Random.Range(0, 5);
-            }
-
-            // Es força el rei en la cel·la estàndar
-            mPieces[12] = "K";
-        }*/
+        
     }
 
 }

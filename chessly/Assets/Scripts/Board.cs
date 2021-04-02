@@ -55,6 +55,10 @@ public class Board : MonoBehaviour
                 {
                     mAllCells[x, y].GetComponent<Image>().color = new Color32(95, 95, 95, 255);
                 }
+                else
+                {
+                    mAllCells[x, y].GetComponent<Image>().color = new Color32(143, 143, 143, 255);
+                }
             }
         }
     }

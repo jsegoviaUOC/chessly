@@ -1,0 +1,34 @@
+{
+	"menu": {
+		"options" : {
+			"ReturnMenuButton" : "Return to Menu",
+			"LangEngButton" : "English",
+			"LangCatButton" : "Catalan",
+			"SelectLanguageText" : "Select Language",
+			"SelectWhitePiecesColorText" : "White Pieces Color",
+			"SelectBlackPiecesColorText" : "Black Pieces Color",
+			"SelectBoardColorText" : "Board Color",
+			"whitePiecesColor" : {
+				"PW" : "Pure White",
+				"IV" : "Ivory",
+				"SB" : "Sky Blue"
+			},
+			"blackPiecesColor" : {
+				"PB" : "Pure Black",
+				"EB" : "Ebony",
+				"DR" : "Dark Red"
+			},
+			"boardColor" : {
+				"BW" : "Black & White",
+				"WC" : "Wood Colors",
+				"NE" : "Neon"
+			}
+		},
+		"general" : {
+			"ClassicButton" : "Classic Game",
+			"NonClassicButton" : "Random Game",
+			"QuitButton" : "Exit",
+			"OptionsButton" : "Options"
+		}
+	}
+}

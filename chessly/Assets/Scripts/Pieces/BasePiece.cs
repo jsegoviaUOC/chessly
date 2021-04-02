@@ -238,8 +238,8 @@ public abstract class BasePiece : EventTrigger
         // Es mou la peça
         Move();
 
-        // Finalitza el turn del color actual
-        mPieceManager.SwitchPlayer(mColor);
+        // Mostra el missatge de finalització del turn
+        mPieceManager.ShowTextInfo();
     }
 
 }
