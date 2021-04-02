@@ -53,11 +53,11 @@ public class Board : MonoBehaviour
                 // seguint el patró classic, canvi de color de les cel·les
                 if( (x + y) % 2 == 0)
                 {
-                    mAllCells[x, y].GetComponent<Image>().color = new Color32(95, 95, 95, 255);
+                    mAllCells[x, y].GetComponent<Image>().color = GameManager.getColor(GameManager.optionsData.colors.boardColor + "Dark");
                 }
                 else
                 {
-                    mAllCells[x, y].GetComponent<Image>().color = new Color32(143, 143, 143, 255);
+                    mAllCells[x, y].GetComponent<Image>().color = GameManager.getColor(GameManager.optionsData.colors.boardColor + "Light");
                 }
             }
         }

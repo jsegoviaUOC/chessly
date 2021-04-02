@@ -26,11 +26,21 @@ public class GameManager : MonoBehaviour
     // Array de l'ordre de les peces en el joc (pendent de fer el tamany dinàmic)
     public static string[] mPieces = new string[16];
 
+    // Objecte amb les dades guardades
+    public static OptionsData optionsData;
+
+    // OptionsJson paths
+    public const string path = "Data";
+    public const string optionsFileName = "options";
+
     // S'executa al iniciar l'escena
     void Start()
     {
         // Definició del tipus de joc
         typeGame();
+
+        // Carrega les opcions sel·leccionades
+        OptionsData();
 
         // Creació del tauler
         mBoard.Create(xAxis, yAxis);
@@ -80,6 +90,67 @@ public class GameManager : MonoBehaviour
                 break;
         }
         
+    }
+
+    // Funció per carregar la informació guardada de les opcions
+    private static void OptionsData()
+    {
+        // Es buscar l'arxiu amb les opcions
+        var dataFound = SaveLoadData.LoadData<OptionsData>(path, optionsFileName);
+
+        // Si es troba es carreguen les
+        if (dataFound != null)
+        {
+            optionsData = dataFound;
+        }
+        else // Si no, es carreguen les dades per default i en guarden en el fitxer option.json
+        {
+            var dataOpt = Resources.Load<TextAsset>("defaultOptions.json");
+            optionsData = JsonUtility.FromJson<OptionsData>(dataOpt.ToString());
+            SaveLoadData.SaveData<OptionsData>(optionsData, path, optionsFileName);
+        }
+    }
+
+    public static Color32 getColor(string colorSlug)
+    {
+        // S'actualitza el color sel·leccionat
+        switch (colorSlug)
+        {
+            case "PW":
+                return new Color32(239, 239, 239, 255);
+            case "IV":
+               return new Color32(238, 223, 170, 255);
+            case "SB":
+                return new Color32(187, 223, 245, 255);
+            case "PB":
+                return new Color32(31, 30, 24, 255);
+            case "EB":
+                return new Color32(38, 38, 53, 255);
+            case "DR":
+                return new Color32(113, 29, 29, 255);
+            case "BWDark":
+                return new Color32(95, 95, 95, 255);
+            case "BWLight":
+                return new Color32(143, 143, 143, 255);
+            case "WCDark":
+                return new Color32(56, 31, 15, 255);
+            case "WCLight":
+                return new Color32(197, 108, 52, 255);
+            case "NEDark":
+                return new Color32(97, 47, 177, 255);
+            case "NELight":
+                return new Color32(127, 177, 47, 255);
+            default:
+                return new Color32(255, 255, 255, 255);
+        }
+
+    }
+    
+    // Retorn al menu principal
+    public void BackMenu()
+    {
+        // Carrega la escena del menu principal
+        SceneManager.LoadScene("Main Menu");
     }
 
 }

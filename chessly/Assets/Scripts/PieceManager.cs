@@ -53,8 +53,8 @@ public class PieceManager : MonoBehaviour
         mBlackPiecesOrder = GameManager.mPieces;
 
         // Creació de les peces blanques i negres
-        mWhitePieces = CreatePieces(Color.white, new Color32(239, 239, 239, 255));
-        mBlackPieces = CreatePieces(Color.black, new Color32(31, 30, 24, 255));
+        mWhitePieces = CreatePieces(Color.white, GameManager.getColor(GameManager.optionsData.colors.whitePiecesColor));
+        mBlackPieces = CreatePieces(Color.black, GameManager.getColor(GameManager.optionsData.colors.blackPiecesColor));
 
         // Colocació inicial
         PlacePieces(1, 0, mWhitePieces, board);
