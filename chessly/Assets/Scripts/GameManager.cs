@@ -61,6 +61,9 @@ public class GameManager : MonoBehaviour
                 xAxis = 8 + xMargin * 2;
                 yAxis = Random.Range(5, 8);
 
+                mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(300 - (xMargin*100), mBoard.GetComponent<RectTransform>().offsetMin.y);
+                mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(mBoard.GetComponent<RectTransform>().offsetMin.x, 50 + (8- yAxis)*50);
+
                 // Array de l'ordre de les peces en el joc random
                 int pieceRand = Random.Range(0, 5);
 
@@ -121,7 +124,7 @@ public class GameManager : MonoBehaviour
             case "IV":
                return new Color32(238, 223, 170, 255);
             case "SB":
-                return new Color32(187, 223, 245, 255);
+                return new Color32(73, 157, 220, 255);
             case "PB":
                 return new Color32(31, 30, 24, 255);
             case "EB":
@@ -133,7 +136,7 @@ public class GameManager : MonoBehaviour
             case "BWLight":
                 return new Color32(143, 143, 143, 255);
             case "WCDark":
-                return new Color32(56, 31, 15, 255);
+                return new Color32(118, 65, 23, 255);
             case "WCLight":
                 return new Color32(197, 108, 52, 255);
             case "NEDark":
