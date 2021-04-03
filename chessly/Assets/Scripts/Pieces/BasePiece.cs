@@ -238,8 +238,26 @@ public abstract class BasePiece : EventTrigger
         // Es mou la peça
         Move();
 
-        // Mostra el missatge de finalització del turn
-        mPieceManager.ShowTextInfo();
+        // Si es juga contra l'ordinador, es fa un canvi de turn
+        if (GameManager.NPColor == Color.white || GameManager.NPColor == Color.black)
+        {
+            mPieceManager.SwitchPlayer();
+        }
+        else// Mostra el missatge de finalització del turn del jugador
+        {
+            mPieceManager.ShowTextInfo();
+        }
+    }
+
+    // Moviment al atzar del non-player, el jugador controlat per l'ordinador
+    public void NonPlayerMove()
+    {
+        // S'escull una cel·la a l'atzar de les possibles
+        int index = Random.Range(0, mPossiblePathCells.Count);
+        mTargetCell = mPossiblePathCells[index];
+
+        // Es mou la peça
+        Move();
     }
 
 }

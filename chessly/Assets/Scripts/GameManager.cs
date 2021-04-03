@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     {
         "P","T", "KN", "B", "Q"
     };
+    private static int pieceRand;
 
     // Array de l'ordre de les peces en el joc (pendent de fer el tamany dinàmic)
     public static string[] mPieces = new string[16];
@@ -33,6 +34,13 @@ public class GameManager : MonoBehaviour
     public const string path = "Data";
     public const string optionsFileName = "options";
 
+    // Objecte per gestionar les traduccions
+    public static LanguagesData languageData;
+
+    // Color del jugador controlat per l'ordinador (Non-Player)
+    private static int NPColorRand;
+    public static Color NPColor = Color.red;
+
     // S'executa al iniciar l'escena
     void Start()
     {
@@ -41,6 +49,9 @@ public class GameManager : MonoBehaviour
 
         // Carrega les opcions sel·leccionades
         OptionsData();
+
+        // Carrega les traduccions dels textos
+        LanguageManager.ApplyLanguageData();
 
         // Creació del tauler
         mBoard.Create(xAxis, yAxis);
@@ -52,20 +63,21 @@ public class GameManager : MonoBehaviour
     // Funció per definir el tipus de joc
     public void typeGame()
     {
-        // Joc clàssic
+        
         switch (GameButton.typeGame)
         {
-            case 1:
+            case 1:// Joc Random (NonClassic)
 
                 xMargin = Random.Range(0, 3);
                 xAxis = 8 + xMargin * 2;
                 yAxis = Random.Range(5, 8);
 
+                // Es cetra el board en la pantalla
                 mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(300 - (xMargin*100), mBoard.GetComponent<RectTransform>().offsetMin.y);
                 mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(mBoard.GetComponent<RectTransform>().offsetMin.x, 50 + (8- yAxis)*50);
 
                 // Array de l'ordre de les peces en el joc random
-                int pieceRand = Random.Range(0, 5);
+                pieceRand = Random.Range(0, 5);
 
                 for (int i = 0; i < 16; i++)
                 {
@@ -76,8 +88,54 @@ public class GameManager : MonoBehaviour
                 // Es força el rei en la cel·la estàndar
                 mPieces[12] = "K";
 
+                // reinicio el color del Non-Player al default
+                NPColor = Color.red;
+
                 break;
-            default:
+            case 2:// Joc clàssic contra l'ordinador
+
+                xMargin = 0;
+                xAxis = 8;
+                yAxis = 8;
+
+                NPColorRand = Random.Range(0, 2);
+                NPColor = NPColorRand == 1 ? Color.white : Color.black;
+
+                // Array de l'ordre de les peces en el joc classic
+                mPieces = new string[16]
+                {
+                    "P", "P", "P", "P", "P", "P", "P", "P",
+                    "T", "KN", "B", "Q", "K", "B", "KN", "T"
+                };
+
+                break;
+            case 3:// Joc Random (NonClassic)contra l'ordinador
+
+                xMargin = Random.Range(0, 3);
+                xAxis = 8 + xMargin * 2;
+                yAxis = Random.Range(5, 8);
+
+                // Es cetra el board en la pantalla
+                mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(300 - (xMargin * 100), mBoard.GetComponent<RectTransform>().offsetMin.y);
+                mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(mBoard.GetComponent<RectTransform>().offsetMin.x, 50 + (8 - yAxis) * 50);
+
+                // Array de l'ordre de les peces en el joc random
+                pieceRand = Random.Range(0, 5);
+
+                for (int i = 0; i < 16; i++)
+                {
+                    mPieces[i] = mTypePieces[pieceRand];
+                    pieceRand = Random.Range(0, 5);
+                }
+
+                NPColorRand = Random.Range(0, 2);
+                NPColor = NPColorRand == 1 ? Color.white : Color.black;
+
+                // Es força el rei en la cel·la estàndar
+                mPieces[12] = "K";
+
+                break;
+            default:// Joc clàssic
 
                 xMargin = 0;
                 xAxis = 8;
@@ -89,6 +147,9 @@ public class GameManager : MonoBehaviour
                     "P", "P", "P", "P", "P", "P", "P", "P",
                     "T", "KN", "B", "Q", "K", "B", "KN", "T"
                 };
+
+                // reinicio el color del Non-Player al default
+                NPColor = Color.red;
 
                 break;
         }

@@ -12,8 +12,6 @@ public class GameButton : MonoBehaviour
     // Objecte amb les dades guardades
     public static OptionsData optionsData;
 
-    public static LanguagesData languageData;
-
     // OptionsJson paths
     public const string path = "Data";
     public const string optionsFileName = "options";

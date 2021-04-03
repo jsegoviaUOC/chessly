@@ -25,10 +25,27 @@
 			}
 		},
 		"general" : {
+			"OnePlayerText" : "One Player",
+			"ClassicNPButton" : "Classic Game\n vs Computer",
+			"NonClassicNPButton" : "Random Game\n vs Computer",
+			"TwoPlayersText" : "Two Players",
 			"ClassicButton" : "Classic Game",
 			"NonClassicButton" : "Random Game",
 			"QuitButton" : "Exit",
 			"OptionsButton" : "Options"
+		}
+	},
+	"game" : {
+		"buttons" : {
+			"OkButton" : "Ok",
+			"NewGameButton" : "New Game",
+			"ReturnButton" : "Return to Menu"
+		},
+		"info" : {
+			"WinWhiteText" : "Congratulations white player!\nYou Win",
+			"WinBlackText" : "Congratulations black player!\nYou Win",
+			"TurnWhiteText" : "Is white player's turn",
+			"TurnBlackText" : "Is black player's turn"
 		}
 	}
 }

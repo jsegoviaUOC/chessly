@@ -1,7 +1,7 @@
 {
 	"menu": {
 		"options" : {
-			"ReturnMenuButton" : "Tornar al menú",
+			"ReturnMenuButton" : "Tornar al Menú",
 			"LangEngButton" : "Anglés",
 			"LangCatButton" : "Català",
 			"SelectLanguageText" : "Tria l'idioma",
@@ -25,10 +25,27 @@
 			}
 		},
 		"general" : {
+			"OnePlayerText" : "Un Jugador",
+			"ClassicNPButton" : "Joc Clàssic\ncontra el PC",
+			"NonClassicNPButton" : "Joc a l'Atzar\ncontra el PC",
+			"TwoPlayersText" : "Dos Jugadors",
 			"ClassicButton" : "Joc Clàssic",
 			"NonClassicButton" : "Joc a l'Atzar",
 			"QuitButton" : "Sortir",
 			"OptionsButton" : "Opcions"
+		}
+	},
+	"game" : {
+		"buttons" : {
+			"OkButton" : "Vale",
+			"NewGameButton" : "Nova partida",
+			"ReturnButton" : "Tornar al Menú"
+		},
+		"info" : {
+			"WinWhiteText" : "Felicitats jugador blanc!\n Has guanyat",
+			"WinBlackText" : "Felicitats jugador negre!\n Has guanyat",
+			"TurnWhiteText" : "És el torn del\n jugador blanc",
+			"TurnBlackText" : "És el torn del\n jugador negre"
 		}
 	}
 }

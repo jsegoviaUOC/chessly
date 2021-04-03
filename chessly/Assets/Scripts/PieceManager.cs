@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PieceManager : MonoBehaviour
 {
@@ -13,8 +14,11 @@ public class PieceManager : MonoBehaviour
     // Recuadre de text amb informació de la partida
     public GameObject textDisplayCanvas;
 
-    // Controla el color del juagdor actual
+    // Controla el color del jugador actual
     public Color currentColor;
+
+    // Color del jugador controlat per l'ordinador (Non-Player)
+    public Color NPColor;
 
     // Creació llista de peces
     private List<BasePiece> mWhitePieces = null;
@@ -43,8 +47,14 @@ public class PieceManager : MonoBehaviour
         //{"E",  typeof(Elefant)}
     };
 
+    // Objecte per gestionar les traduccions
+    public static LanguagesData languageData;
+
     public void Setup(Board board)
     {
+        // Recull els textos traduits
+        languageData = LanguageManager.getLanguageText();
+
         // Es deshabilita el recuadre informatiu de la partida
         textDisplayCanvas.GetComponent<Canvas>().enabled = false;
 
@@ -154,7 +164,13 @@ public class PieceManager : MonoBehaviour
             currentColor = Color.black;
 
             // Es posa el text per defecte del botó del recuadre d'informació
-            GameObject.Find("OkButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Ok";
+            GameObject.Find("QuitTextButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.OkButton;
+
+            // Si era una partida contra l'ordinador, es torna a calcular al atzar el color assignat a aquest
+            if (GameManager.NPColor == Color.white || GameManager.NPColor == Color.black) {
+                int NPColorRand = Random.Range(0, 2);
+                GameManager.NPColor = NPColorRand == 1 ? Color.white : Color.black;
+            }
         }
 
         // Es comprova de qui es el torn i s'ativen les peces d'aquest color i es desactiven les de l'altre
@@ -197,6 +213,13 @@ public class PieceManager : MonoBehaviour
             
             // S'actualitza el color del jugador actual
             currentColor = Color.black;
+        }
+
+        // Si el joc és contra l'ordinador, s'executen la funció del torn de l'ordinador i el canvi de torn consecutivament
+        if(currentColor == GameManager.NPColor)
+        {
+            NonPlayerTurn();
+            SwitchPlayer();
         }
 
     }
@@ -251,19 +274,18 @@ public class PieceManager : MonoBehaviour
         // Si el joc ha acabat el text que es mostra és diferent
         if (isEndGame)
         {
-            string textColor = currentColor == Color.white ? "white" : "black";
-            textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Congratulations " + textColor + " player!\nYou win";
-            GameObject.Find("OkButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "New Game";
+            string winText = currentColor == Color.white ? languageData.game.info.WinWhiteText : languageData.game.info.WinBlackText;
+            textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = winText;
+            GameObject.Find("QuitTextButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.NewGameButton;
         }
         else
         {
-            string textColor = currentColor == Color.white ? "black" : "white";
-            textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Is "+ textColor + " player turn";
+            string nextTurnText = currentColor != Color.white ? languageData.game.info.TurnWhiteText : languageData.game.info.TurnBlackText;
+            textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = nextTurnText;
         }
 
         // Es mostra el recuadre d'informació
         textDisplayCanvas.GetComponent<Canvas>().enabled = true;
-
     }
 
     // Funció per tancar el recuadre de text
@@ -275,6 +297,36 @@ public class PieceManager : MonoBehaviour
         // S'habiliten i deshabiliten els botons i recuadres de text pertinents
         textDisplayCanvas.GetComponent<Canvas>().enabled = false;
         GameObject.Find("ButtonSpace").GetComponent<Canvas>().enabled = true;
+    }
+
+    // Funció del torn del NP (Non-Player)
+    private void NonPlayerTurn()
+    {
+        BasePiece piece = null;
+
+        do
+        {
+            // S'agafa una peça al atzar del color que controla l'ordinador
+            BasePiece testPiece = null;
+            if (currentColor == Color.white)
+            {
+                int index = Random.Range(0, mWhitePieces.Count);
+                testPiece = mWhitePieces[index];
+            }
+            else
+            {
+                int index = Random.Range(0, mBlackPieces.Count);
+                testPiece = mBlackPieces[index];
+            }
+
+            // Es comprova si està actiu l'objecte i si es pot moure legalment
+            if (testPiece.gameObject.activeInHierarchy && testPiece.HasMove())
+                piece = testPiece;
+            
+        } while (!piece);
+
+        //Funció per moure la peça
+        piece.NonPlayerMove();
     }
 
 }

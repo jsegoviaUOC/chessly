@@ -40,13 +40,28 @@ public class LanguageManager
         languageData = JsonUtility.FromJson<LanguagesData>(dataLang.ToString());
     }
 
+    // Get dels textos
+    public static LanguagesData getLanguageText()
+    {
+        return languageData;
+    }
+
     // Funció per a aplicar els textos
     public static void ApplyLanguageData()
     {
         OptionsData();
         LoadLanguageData();
 
+        /*
+         * Traduccions Menú 
+         */
+        // Textos del menú principal
+        if (GameObject.Find("OnePlayerSection")) { GameObject.Find("OnePlayerSection").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.OnePlayerText; }
+        if (GameObject.Find("TwoPlayersSection")) { GameObject.Find("TwoPlayersSection").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.TwoPlayersText; }
+
         // Botons d'accés
+        if (GameObject.Find("ClassicNPButton")) { GameObject.Find("ClassicNPButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.ClassicNPButton; }
+        if (GameObject.Find("NonClassicNPButton")) { GameObject.Find("NonClassicNPButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.NonClassicNPButton; }
         if (GameObject.Find("ClassicButton")) { GameObject.Find("ClassicButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.ClassicButton; }
         if (GameObject.Find("NonClassicButton")) { GameObject.Find("NonClassicButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.NonClassicButton; }
         if (GameObject.Find("QuitButton")) { GameObject.Find("QuitButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.QuitButton; }
@@ -63,21 +78,27 @@ public class LanguageManager
         if (GameObject.Find("BlackColorText")) { GameObject.Find("BlackColorText").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.SelectBlackPiecesColorText; }
         if (GameObject.Find("BoardColorText")) { GameObject.Find("BoardColorText").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.SelectBoardColorText; }
 
-        //Textos opcions color peces blanques
+        // Textos opcions color peces blanques
         if (GameObject.Find("PWButton")) { GameObject.Find("PWButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.whitePiecesColor.PW; }
         if (GameObject.Find("IVButton")) { GameObject.Find("IVButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.whitePiecesColor.IV; }
         if (GameObject.Find("SBButton")) { GameObject.Find("SBButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.whitePiecesColor.SB; }
 
-        //Textos opcions color peces blanques
+        // Textos opcions color peces blanques
         if (GameObject.Find("PBButton")) { GameObject.Find("PBButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.blackPiecesColor.PB; }
         if (GameObject.Find("EBButton")) { GameObject.Find("EBButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.blackPiecesColor.EB; }
         if (GameObject.Find("DRButton")) { GameObject.Find("DRButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.blackPiecesColor.DR; }
 
-        //Textos opcions color peces blanques
+        // Textos opcions color peces blanques
         if (GameObject.Find("BWButton")) { GameObject.Find("BWButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.boardColor.BW; }
         if (GameObject.Find("WCButton")) { GameObject.Find("WCButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.boardColor.WC; }
         if (GameObject.Find("NEButton")) { GameObject.Find("NEButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.boardColor.NE; }
 
+        /*
+         * Traduccions Joc 
+         */
+         // Textos botons del joc
+        if (GameObject.Find("ReturnButton")) { GameObject.Find("ReturnButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.ReturnButton; }
+        if (GameObject.Find("QuitTextButton")) { GameObject.Find("QuitTextButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.OkButton; }
     }
 
 }

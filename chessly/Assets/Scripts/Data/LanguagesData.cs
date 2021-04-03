@@ -5,18 +5,19 @@ using UnityEngine;
 [System.Serializable]
 public class LanguagesData
 {
-    public MenuData menu;
+    public Menu menu;
+    public InGame game;
 }
 
 [System.Serializable]
-public class MenuData
+public class Menu
 {
-    public GeneralMenuData general;
-    public OptionsMenuData options;
+    public GeneralMenu general;
+    public OptionsMenu options;
 }
 
 [System.Serializable]
-public class OptionsMenuData
+public class OptionsMenu
 {
     public string ReturnMenuButton;
     public string LangEngButton;
@@ -33,8 +34,12 @@ public class OptionsMenuData
 }
 
 [System.Serializable]
-public class GeneralMenuData
+public class GeneralMenu
 {
+    public string OnePlayerText;
+    public string ClassicNPButton;
+    public string NonClassicNPButton;
+    public string TwoPlayersText;
     public string ClassicButton;
     public string NonClassicButton;
     public string QuitButton;
@@ -63,4 +68,28 @@ public class BoardColors
     public string BW;
     public string WC;
     public string NE;
+}
+
+[System.Serializable]
+public class InGame
+{
+    public GameButtons buttons;
+    public GameInfo info;
+}
+
+[System.Serializable]
+public class GameButtons
+{
+    public string OkButton;
+    public string NewGameButton;
+    public string ReturnButton;
+}
+
+[System.Serializable]
+public class GameInfo
+{
+    public string WinWhiteText;
+    public string WinBlackText;
+    public string TurnWhiteText;
+    public string TurnBlackText;
 }
