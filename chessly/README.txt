@@ -1,0 +1,1 @@
+Cal descarregar tot el contigut de la carpeta Build per a poder executar el joc

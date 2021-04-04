@@ -9,7 +9,7 @@ public class Queen : BasePiece
         base.Setup(newTeamColor, newSpriteColor, newPieceManager);
 
         // Moviment de la peça
-        mMovement = new Vector3Int(7, 7, 7);
+        mMovement = new Vector3Int(13, 13, 13);
 
         // Sprite
         GetComponent<Image>().sprite = Resources.Load<Sprite>("Q_Piece");

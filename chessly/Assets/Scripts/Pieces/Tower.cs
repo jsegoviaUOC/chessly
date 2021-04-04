@@ -13,7 +13,7 @@ public class Tower : BasePiece
         base.Setup(newTeamColor, newSpriteColor, newPieceManager);
 
         // Moviment
-        mMovement = new Vector3Int(7, 7, 0);
+        mMovement = new Vector3Int(13, 13, 0);
 
         // Sprite
         GetComponent<Image>().sprite = Resources.Load<Sprite>("T_Piece");

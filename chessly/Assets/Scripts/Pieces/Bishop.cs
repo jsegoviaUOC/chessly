@@ -9,7 +9,7 @@ public class Bishop : BasePiece
         base.Setup(newTeamColor, newSpriteColor, newPieceManager);
 
         // Moviment de l'alfil
-        mMovement = new Vector3Int(0, 0, 7);
+        mMovement = new Vector3Int(0, 0, 13);
 
         // Sprite
         GetComponent<Image>().sprite = Resources.Load<Sprite>("B_Piece");
