@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Cell : MonoBehaviour
+public class CellEditor : MonoBehaviour
 {
     // Imatge del borde de la cel·la
     public Image mBorderImage;
@@ -12,7 +12,7 @@ public class Cell : MonoBehaviour
     public Vector2Int mBoardPosition = Vector2Int.zero;
     
     // Tauler
-    public Board mBoard = null;
+    public BoardEditor mBoard = null;
     public RectTransform mRectTransform = null;
 
     // Peça
@@ -22,22 +22,13 @@ public class Cell : MonoBehaviour
     public int score = 0;
 
     // Funció d'inicialització
-    public void Setup(Vector2Int newBoardPosition, Board newBoard)
+    public void Setup(Vector2Int newBoardPosition, BoardEditor newBoard)
     {
         // Inicialització del tauler i del vector de posicions
         mBoardPosition = newBoardPosition;
         mBoard = newBoard;
 
         mRectTransform = GetComponent<RectTransform>();
-    }
-
-    // Funció per eliminar una peça
-    public void RemovePiece()
-    {
-        if (mCurrentPiece != null)
-        {
-            mCurrentPiece.Kill();
-        }
     }
 
 }

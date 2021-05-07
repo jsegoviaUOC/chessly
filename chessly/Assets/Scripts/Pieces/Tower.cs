@@ -7,6 +7,9 @@ public class Tower : BasePiece
     public Cell mCastlingTriggerCell = null;
     private Cell mCastlingCell = null;
 
+    // Valor assignat per matar aquesta peça
+    public int price = 5;
+
     public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager)
     {
         // Inicialització de la peça

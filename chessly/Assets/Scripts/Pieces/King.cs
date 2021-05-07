@@ -6,6 +6,9 @@ public class King : BasePiece
     private Tower mLeftTower = null;
     private Tower mRightTower = null;
 
+    // Valor assignat per matar aquesta peça
+    public int price = 9;
+
     public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager)
     {
         // Inicialització de la peça

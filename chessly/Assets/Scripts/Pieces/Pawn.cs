@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 public class Pawn : BasePiece
 {
+
+    // Valor assignat per matar aquesta peça
+    public int price = 1;
+
     public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager)
     {
         // Inicialització de la peça
@@ -36,6 +40,19 @@ public class Pawn : BasePiece
         if (cellState == targetState)
         {
             mPossiblePathCells.Add(mCurrentCell.mBoard.mAllCells[targetX, targetY]);
+
+            // S'evalua si la casella es bona o no per fer un atac al enemic
+            if (nonPlayerTurnOn)
+            {
+                if (cellState == CellState.Enemy)
+                {
+                    mCurrentCell.mBoard.mAllCells[targetX, targetY].score = 100 + mCurrentCell.mCurrentPiece.price * 10 + 9;
+                }
+                else
+                {
+                    mCurrentCell.mBoard.mAllCells[targetX, targetY].score = 0;
+                }
+            }
             return true;
         }
 

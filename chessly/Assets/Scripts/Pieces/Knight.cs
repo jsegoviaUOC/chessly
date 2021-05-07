@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 public class Knight : BasePiece
 {
+    // Valor assignat per matar aquesta peça
+    public int price = 4;
+
     public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager)
     {
         // Inicialització de la peça
@@ -41,6 +44,8 @@ public class Knight : BasePiece
 
         // L'altra meitat dels moviments
         CreatePath(-1);
+
+
     }
 
     // Agafa l'estat de la cel·la
@@ -52,8 +57,23 @@ public class Knight : BasePiece
 
         // Si hi ha un enemic o està lliure
         if (cellState == CellState.Enemy || cellState == CellState.Free)
+        {
 
             // S'afegeix la cel·la a les possible opcions de moviment de a peça
             mPossiblePathCells.Add(mCurrentCell.mBoard.mAllCells[targetX, targetY]);
+
+            // S'evalua si la casella es bona o no per fer un atac al enemic
+            if (nonPlayerTurnOn)
+            {
+                if (cellState == CellState.Enemy)
+                {
+                    mCurrentCell.mBoard.mAllCells[targetX, targetY].score = 100 + mCurrentCell.mCurrentPiece.price * 10 + 6;
+                }
+                else
+                {
+                    mCurrentCell.mBoard.mAllCells[targetX, targetY].score = 0;
+                }
+            }
+        }
     }
 }

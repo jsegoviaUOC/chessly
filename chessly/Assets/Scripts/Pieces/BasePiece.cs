@@ -27,6 +27,10 @@ public abstract class BasePiece : EventTrigger
     // Cel·les resaltades
     protected List<Cell> mPossiblePathCells = new List<Cell>();
 
+    public int price = 0;
+
+    protected bool nonPlayerTurnOn = false;
+
     // Inicialització de la peça
     public virtual void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager)
     {
@@ -112,6 +116,19 @@ public abstract class BasePiece : EventTrigger
             {
                 // S'afegeix la cel·la a les possible opcions de moviment de a peça
                 mPossiblePathCells.Add(mCurrentCell.mBoard.mAllCells[currentX, currentY]);
+
+                // S'evalua si la casella es bona o no per fer un atac al enemic
+                if (nonPlayerTurnOn)
+                {
+                    if (cellState == CellState.Enemy)
+                    {
+                        mCurrentCell.mBoard.mAllCells[currentX, currentY].score = 100 + mCurrentCell.mCurrentPiece.price*10 + (10 - this.price);
+                    }
+                    else
+                    {
+                        mCurrentCell.mBoard.mAllCells[currentX, currentY].score = 0;
+                    }
+                }
             }
 
             // Si s'ha trobat un enemic o una cel·la ocupada, no es pot seguir amb aquest moviment
@@ -184,8 +201,6 @@ public abstract class BasePiece : EventTrigger
         mTargetCell = null;
     }
 
-    // Funcions per realitzar el drag and drop de la peça
-
     // Inici del drag
     public override void OnBeginDrag(PointerEventData eventData)
     {
@@ -250,14 +265,53 @@ public abstract class BasePiece : EventTrigger
     }
 
     // Moviment al atzar del non-player, el jugador controlat per l'ordinador
-    public void NonPlayerMove()
+    public Cell NonPlayerMoves()
     {
+        nonPlayerTurnOn = true;
+        if (HasMove())
+        {
+            Cell bestCell = null;
+            int score = 0;
+
+            foreach (Cell cell in mPossiblePathCells)
+            {
+                if(cell.score >= score)
+                {
+                    bestCell = cell;
+                    score = cell.score;
+                    Debug.Log(cell.mBoardPosition);
+                }
+            }
+
+            // S'esborr la informació sobre el path
+            ClearCells();
+
+            return bestCell;
+        }
+
+        return null;
         // S'escull una cel·la a l'atzar de les possibles
-        int index = Random.Range(0, mPossiblePathCells.Count);
-        mTargetCell = mPossiblePathCells[index];
+        //int index = Random.Range(0, mPossiblePathCells.Count);
+
+        //mTargetCell = mPossiblePathCells[index];
 
         // Es mou la peça
-        Move();
+        //Move();
     }
 
+    public void NonPlayerDoMove(Cell target)
+    {
+        mTargetCell = target;
+
+        Move();
+
+        nonPlayerTurnOn = false;
+    }
+
+    public override void OnPointerClick(PointerEventData eventData)
+    {
+        base.OnPointerClick(eventData);
+
+        Debug.Log("HOLA");
+    }
 }

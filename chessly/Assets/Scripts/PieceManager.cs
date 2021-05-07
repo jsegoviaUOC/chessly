@@ -21,14 +21,14 @@ public class PieceManager : MonoBehaviour
     public Color NPColor;
 
     // Creació llista de peces
-    private List<BasePiece> mWhitePieces = null;
-    private List<BasePiece> mBlackPieces = null;
+    private List<BasePiece> mWhitePieces = new List<BasePiece>();
+    private List<BasePiece> mBlackPieces = new List<BasePiece>();
     private List<BasePiece> mPromotedPieces = new List<BasePiece>();
 
     // Array de l'ordre de les peces en el joc (pendent de fer el tamany dinàmic)
-    private string[] mWhitePiecesOrder = new string[16];
-    private string[] mBlackPiecesOrder = new string[16];
-    private string[] mAuxiliarPiecesOrder = new string[16];
+    private List<string> mWhitePiecesOrder;
+    private List<string> mBlackPiecesOrder;
+    private List<string> mAuxiliarPiecesOrder;
 
     // Creació d'un diccionari per relacionar l'array de peces amb el tipus de peça
     private Dictionary<string, Type> mPieceLibrary = new Dictionary<string, Type>()
@@ -59,52 +59,46 @@ public class PieceManager : MonoBehaviour
         textDisplayCanvas.GetComponent<Canvas>().enabled = false;
 
         // Llistat de peces incials de cada color
-        mWhitePiecesOrder = GameManager.mPieces;
-        mBlackPiecesOrder = GameManager.mPieces;
+        for(int i = 0; i < Board.xLimit; i++)
+        {
+            for (int j = 0; j < Board.yLimit; j++)
+            {
+                VoidPiece vPiece = GameManager.matrixPieces[i,j];
+                if (vPiece != null)
+                {
+                    Color teamColor;
+                    Color spriteColor;
+                    Type pieceType = mPieceLibrary[vPiece.type];
 
-        // Creació de les peces blanques i negres
-        mWhitePieces = CreatePieces(Color.white, GameManager.getColor(GameManager.optionsData.colors.whitePiecesColor));
-        mBlackPieces = CreatePieces(Color.black, GameManager.getColor(GameManager.optionsData.colors.blackPiecesColor));
+                    // Es crea la peça
+                    BasePiece newPiece = CreatePiece(pieceType);
 
-        // Colocació inicial
-        PlacePieces(1, 0, mWhitePieces, board);
-        PlacePieces(Board.yLimit - 2, Board.yLimit-1, mBlackPieces, board);
+                    if (vPiece.color == "W")
+                    {
+                        teamColor = Color.white;
+                        spriteColor = GameManager.getColor(GameManager.optionsData.colors.whitePiecesColor);
+
+                        mWhitePieces.Add(newPiece);
+                    }
+                    else
+                    {
+                        teamColor = Color.black;
+                        spriteColor = GameManager.getColor(GameManager.optionsData.colors.blackPiecesColor);
+
+                        mBlackPieces.Add(newPiece);
+                    }
+
+                    // S'inicialitza la peça amb el seu color i l'equip al que pertany
+                    newPiece.Setup(teamColor, spriteColor, this);
+
+                    newPiece.Place(board.mAllCells[i, j]);
+                }
+            }
+        }
 
         // Inici del torn de les blanques
         currentColor = Color.black;
         SwitchPlayer();
-    }
-
-    // Funció per crear les peces de tot un color
-    private List<BasePiece> CreatePieces(Color teamColor, Color32 spriteColor)
-    {
-        List<BasePiece> newPieces = new List<BasePiece>();
-
-        if( teamColor == Color.white)
-        {
-            mAuxiliarPiecesOrder = mWhitePiecesOrder;
-        }
-        else
-        {
-            mAuxiliarPiecesOrder = mBlackPiecesOrder;
-        }
-
-        for (int i = 0; i < mAuxiliarPiecesOrder.Length; i++)
-        {
-            // S'agafa el tipus de peça del diccionari en funció de l'array
-            string key = mAuxiliarPiecesOrder[i];
-            Type pieceType = mPieceLibrary[key];
-
-            // Es crea la peça
-            BasePiece newPiece = CreatePiece(pieceType);
-            newPieces.Add(newPiece);
-
-            // S'inicialitza la peça amb el seu color i l'equip al que pertany
-            newPiece.Setup(teamColor, spriteColor, this);
-        }
-
-        // Es retorna el llistat complert de peces a la funció anterior
-        return newPieces;
     }
 
     // Funció per crear una peça
@@ -123,20 +117,6 @@ public class PieceManager : MonoBehaviour
 
         //retorn de la peça a la funció anterior
         return newPiece;
-    }
-
-    // Funció per colocar les peces d'un color en formació inicial (només acepta el tauler classic)
-    private void PlacePieces(int frontRow, int backRow, List<BasePiece> pieces, Board board)
-    {
-        // Per a cada fila (del tauler estandar)
-        for (int i = 0; i < mAuxiliarPiecesOrder.Length / 2; i++)
-        {
-            // Posició de les peces frontals  
-            pieces[i].Place(board.mAllCells[i + GameManager.xMargin, frontRow]);
-
-            // Posició de les peces traseres  
-            pieces[i + mAuxiliarPiecesOrder.Length / 2].Place(board.mAllCells[i + GameManager.xMargin, backRow]);
-        }
     }
 
     // Funció que inicialitza les peces com actives
@@ -302,31 +282,90 @@ public class PieceManager : MonoBehaviour
     // Funció del torn del NP (Non-Player)
     private void NonPlayerTurn()
     {
-        BasePiece piece = null;
+        //BasePiece piece = null;
 
-        do
-        {
+        List<Cell> nonPlayerMoveOptions = new List<Cell>();
+        List<BasePiece> nonPlayerPiecesOptions = new List<BasePiece>();
+        List<BasePiece> auxPieces = null;
+
+        int bestScore = -1;
+
+        /*do
+        {*/
             // S'agafa una peça al atzar del color que controla l'ordinador
-            BasePiece testPiece = null;
+            //BasePiece testPiece = null;
             if (currentColor == Color.white)
             {
-                int index = Random.Range(0, mWhitePieces.Count);
-                testPiece = mWhitePieces[index];
+              /*  int index = Random.Range(0, mWhitePieces.Count);
+                testPiece = mWhitePieces[index];*/
+
+                auxPieces = mWhitePieces;
             }
             else
             {
-                int index = Random.Range(0, mBlackPieces.Count);
-                testPiece = mBlackPieces[index];
+                /*int index = Random.Range(0, mBlackPieces.Count);
+                testPiece = mBlackPieces[index];*/
+
+                auxPieces = mBlackPieces;
             }
 
+            foreach (BasePiece p in auxPieces)
+            {
+                if (p.gameObject.activeInHierarchy)
+                {
+                    Cell cell = null;
+                    cell = p.NonPlayerMoves();
+                    if (cell != null)
+                    {
+                        nonPlayerMoveOptions.Add(cell);
+                        nonPlayerPiecesOptions.Add(p);
+                    }
+                }
+                
+            }
+
+            int index = 0;
+            int indexBestPiece = 0;
+
+            //Random rng = new Random();
+
+            int n = nonPlayerMoveOptions.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = Random.Range(0, n);
+                Cell cellValue = nonPlayerMoveOptions[k];
+                nonPlayerMoveOptions[k] = nonPlayerMoveOptions[n];
+                nonPlayerMoveOptions[n] = cellValue;
+
+                BasePiece pieceValue = nonPlayerPiecesOptions[k];
+                nonPlayerPiecesOptions[k] = nonPlayerPiecesOptions[n];
+                nonPlayerPiecesOptions[n] = pieceValue;
+            }
+
+            foreach (Cell bestCell in nonPlayerMoveOptions)
+            {
+                
+                if (bestCell.score > bestScore)
+                {
+                    indexBestPiece = index;
+                    bestScore = bestCell.score;
+                }
+                index++;
+            }
+        Debug.Log(bestScore);
+
+
+            nonPlayerPiecesOptions[indexBestPiece].NonPlayerDoMove(nonPlayerMoveOptions[indexBestPiece]);
+
             // Es comprova si està actiu l'objecte i si es pot moure legalment
-            if (testPiece.gameObject.activeInHierarchy && testPiece.HasMove())
-                piece = testPiece;
-            
-        } while (!piece);
+            /*if (testPiece.gameObject.activeInHierarchy && testPiece.HasMove())
+                piece = testPiece;*/
+
+        //} while (!piece);
 
         //Funció per moure la peça
-        piece.NonPlayerMove();
+        //piece.NonPlayerMove();
     }
 
 }

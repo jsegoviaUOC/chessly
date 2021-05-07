@@ -38,6 +38,18 @@ public class GameButton : MonoBehaviour
         SceneManager.LoadScene("Game");
     }
 
+    // Inici de l'editor de taulers
+    public void StartEditor(int type)
+    {
+        // S'inicialitza el tipus de partida
+        typeGame = type;
+
+        Debug.Log("type: " + typeGame);
+
+        // S'inicia l'escena del joc
+        SceneManager.LoadScene("BoardEditor");
+    }
+
     // funció per tancar le joc
     public void QuitGame()
     {

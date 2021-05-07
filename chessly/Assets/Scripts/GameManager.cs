@@ -27,6 +27,8 @@ public class GameManager : MonoBehaviour
     // Array de l'ordre de les peces en el joc (pendent de fer el tamany dinàmic)
     public static string[] mPieces = new string[16];
 
+    public static VoidPiece[,] matrixPieces;
+
     // Objecte amb les dades guardades
     public static OptionsData optionsData;
 
@@ -76,17 +78,8 @@ public class GameManager : MonoBehaviour
                 mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(300 - (xMargin*100), mBoard.GetComponent<RectTransform>().offsetMin.y);
                 mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(mBoard.GetComponent<RectTransform>().offsetMin.x, 50 + (8- yAxis)*50);
 
-                // Array de l'ordre de les peces en el joc random
-                pieceRand = Random.Range(0, 5);
-
-                for (int i = 0; i < 16; i++)
-                {
-                    mPieces[i] = mTypePieces[pieceRand];
-                    pieceRand = Random.Range(0, 5);
-                }
-
-                // Es força el rei en la cel·la estàndar
-                mPieces[12] = "K";
+                // Ordre de les peces en el joc random
+                SetRandomPieces();
 
                 // reinicio el color del Non-Player al default
                 NPColor = Color.red;
@@ -98,15 +91,12 @@ public class GameManager : MonoBehaviour
                 xAxis = 8;
                 yAxis = 8;
 
+                // Sel·lcció aleatotia del jugador inicial
                 NPColorRand = Random.Range(0, 2);
                 NPColor = NPColorRand == 1 ? Color.white : Color.black;
 
-                // Array de l'ordre de les peces en el joc classic
-                mPieces = new string[16]
-                {
-                    "P", "P", "P", "P", "P", "P", "P", "P",
-                    "T", "KN", "B", "Q", "K", "B", "KN", "T"
-                };
+                // Ordre de les peces en el joc classic
+                SetClassicPieces();
 
                 break;
             case 3:// Joc Random (NonClassic)contra l'ordinador
@@ -119,20 +109,38 @@ public class GameManager : MonoBehaviour
                 mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(300 - (xMargin * 100), mBoard.GetComponent<RectTransform>().offsetMin.y);
                 mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(mBoard.GetComponent<RectTransform>().offsetMin.x, 50 + (8 - yAxis) * 50);
 
-                // Array de l'ordre de les peces en el joc random
-                pieceRand = Random.Range(0, 5);
-
-                for (int i = 0; i < 16; i++)
-                {
-                    mPieces[i] = mTypePieces[pieceRand];
-                    pieceRand = Random.Range(0, 5);
-                }
+                // Ordre de les peces en el joc random
+                SetRandomPieces();
 
                 NPColorRand = Random.Range(0, 2);
                 NPColor = NPColorRand == 1 ? Color.white : Color.black;
+                
+                break;
+            case 4:// Joc Editat contra l'ordinador
 
-                // Es força el rei en la cel·la estàndar
-                mPieces[12] = "K";
+                xMargin = 0;
+                xAxis = 8;
+                yAxis = 8;
+
+                // Sel·lcció aleatotia del jugador inicial
+                NPColorRand = Random.Range(0, 2);
+                NPColor = NPColorRand == 1 ? Color.white : Color.black;
+
+                // Ordre de les peces en el joc classic
+                matrixPieces = EditorManager.matrixPiecesEditor;
+
+                break;
+            case 5:// Joc Editat 2P
+                Debug.Log("hola");
+                xMargin = 0;
+                xAxis = 8;
+                yAxis = 8;
+
+                // reinicio el color del Non-Player al default
+                NPColor = Color.red;
+
+                // Ordre de les peces en el joc classic
+                matrixPieces = EditorManager.matrixPiecesEditor;
 
                 break;
             default:// Joc clàssic
@@ -141,12 +149,8 @@ public class GameManager : MonoBehaviour
                 xAxis = 8;
                 yAxis = 8;
 
-                // Array de l'ordre de les peces en el joc classic
-                mPieces = new string[16]
-                {
-                    "P", "P", "P", "P", "P", "P", "P", "P",
-                    "T", "KN", "B", "Q", "K", "B", "KN", "T"
-                };
+                // Ordre de les peces en el joc classic
+                SetClassicPieces();
 
                 // reinicio el color del Non-Player al default
                 NPColor = Color.red;
@@ -215,6 +219,80 @@ public class GameManager : MonoBehaviour
     {
         // Carrega la escena del menu principal
         SceneManager.LoadScene("Main Menu");
+    }
+
+    private void SetClassicPieces()
+    {
+        string[] listPiecesClassic = new string[] {
+            "T", "KN", "B", "Q", "K", "B", "KN", "T"
+        };
+
+        string[] colorsClassic = new string[] { "W", "B" };
+
+        matrixPieces = new VoidPiece[xAxis, yAxis];
+
+        for (int i = 0; i< xAxis; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                VoidPiece vP = new VoidPiece();
+                vP.Setup(listPiecesClassic[i], colorsClassic[j]);
+
+                matrixPieces[i, j * 7] = vP;
+
+                VoidPiece vPP = new VoidPiece();
+                vPP.Setup("P", colorsClassic[j]);
+
+                matrixPieces[i, 5 * j + 1 ] = vPP;
+            }
+        }
+       
+    }
+
+    private void SetRandomPieces()
+    {
+        int piecesInLine = 8;
+        string[] listFrontPiecesClassic = new string[piecesInLine];
+        string[] listBackPiecesClassic = new string[piecesInLine];
+
+        for (int i = 0; i < listBackPiecesClassic.Length; i++)
+        {
+            pieceRand = Random.Range(0, 5);
+            listFrontPiecesClassic[i] = mTypePieces[pieceRand];
+            pieceRand = Random.Range(0, 5);
+            listBackPiecesClassic[i] = mTypePieces[pieceRand];
+        }
+
+        string[] colorsClassic = new string[] { "W", "B" };
+
+        matrixPieces = new VoidPiece[xAxis, yAxis];
+
+        for (int i = 0; i < piecesInLine; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                VoidPiece vPF = new VoidPiece();
+                vPF.Setup(listFrontPiecesClassic[i], colorsClassic[j]);
+
+                matrixPieces[i + xMargin, j * ( yAxis - 1 )] = vPF;
+
+                VoidPiece vPB = new VoidPiece();
+                vPB.Setup(listBackPiecesClassic[i], colorsClassic[j]);
+
+                matrixPieces[i + xMargin, (yAxis - 3) * j + 1] = vPB;
+            }
+        }
+
+        int wheresKing = Random.Range(0, piecesInLine);
+
+        VoidPiece KW = new VoidPiece();
+        KW.Setup("K", "W");
+        matrixPieces[wheresKing + xMargin, 0] = KW;
+
+        VoidPiece KB = new VoidPiece();
+        KB.Setup("K", "B");
+        matrixPieces[wheresKing + xMargin, yAxis - 1] = KB;
+
     }
 
 }
