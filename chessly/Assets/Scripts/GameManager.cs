@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
         typeGame();
 
         // Carrega les opcions sel·leccionades
-        OptionsData();
+        GameButton.OptionsData();
 
         // Carrega les traduccions dels textos
         LanguageManager.ApplyLanguageData();

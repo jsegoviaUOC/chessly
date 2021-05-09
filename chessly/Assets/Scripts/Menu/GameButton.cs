@@ -62,6 +62,13 @@ public class GameButton : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
+    // Inicia el Login al multijugador
+    public void LoginMenu()
+    {
+        // Carrega la escena del menu principal
+        SceneManager.LoadScene("Login");
+    }
+
     // funció per accedir al menu d'opcions
     public void OptionMenu()
     {
@@ -132,7 +139,7 @@ public class GameButton : MonoBehaviour
     }
 
     // Funció per carregar la informació guardada de les opcions
-    private void OptionsData()
+    public static void OptionsData()
     {
         // Es buscar l'arxiu amb les opcions
         var dataFound = SaveLoadData.LoadData<OptionsData>(path, optionsFileName);
