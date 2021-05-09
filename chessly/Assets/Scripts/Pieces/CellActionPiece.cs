@@ -41,8 +41,6 @@ public abstract class CellActionPiece : EventTrigger
         base.OnPointerClick(eventData);
 
         ChangeCell();
-
-        //Debug.Log(mCurrentCell.mBoardPosition.x +" - "+ mCurrentCell.mBoardPosition.y);
     }
 
     public void ChangeCell()
@@ -55,8 +53,8 @@ public abstract class CellActionPiece : EventTrigger
             samePiece = true;
         }
 
-        if ( (EditorManager.selectedColor == "W" && mCurrentCell.mCurrentPiece.GetComponent<Image>().color == EditorManager.getColor(EditorManager.optionsData.colors.whitePiecesColor) ) ||
-             (EditorManager.selectedColor == "B" && mCurrentCell.mCurrentPiece.GetComponent<Image>().color == EditorManager.getColor(EditorManager.optionsData.colors.blackPiecesColor) ) )
+        if ( (EditorManager.selectedColor == "W" && mCurrentCell.mCurrentPiece.GetComponent<Image>().color == GameButton.getColor(EditorManager.optionsData.colors.whitePiecesColor) ) ||
+             (EditorManager.selectedColor == "B" && mCurrentCell.mCurrentPiece.GetComponent<Image>().color == GameButton.getColor(EditorManager.optionsData.colors.blackPiecesColor) ) )
         {
             sameColor = true;
         }
@@ -73,11 +71,11 @@ public abstract class CellActionPiece : EventTrigger
             mCurrentCell.mCurrentPiece.GetComponent<Image>().sprite = Resources.Load<Sprite>(EditorManager.selectedPiece + "_Piece");
             if (EditorManager.selectedColor == "W")
             {
-                mCurrentCell.mCurrentPiece.GetComponent<Image>().color = EditorManager.getColor(EditorManager.optionsData.colors.whitePiecesColor);
+                mCurrentCell.mCurrentPiece.GetComponent<Image>().color = GameButton.getColor(EditorManager.optionsData.colors.whitePiecesColor);
             }
             else
             {
-                mCurrentCell.mCurrentPiece.GetComponent<Image>().color = EditorManager.getColor(EditorManager.optionsData.colors.blackPiecesColor);
+                mCurrentCell.mCurrentPiece.GetComponent<Image>().color = GameButton.getColor(EditorManager.optionsData.colors.blackPiecesColor);
             }
 
             VoidPiece vPF = new VoidPiece();

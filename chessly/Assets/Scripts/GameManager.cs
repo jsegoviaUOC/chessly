@@ -118,9 +118,9 @@ public class GameManager : MonoBehaviour
                 break;
             case 4:// Joc Editat contra l'ordinador
 
-                xMargin = 0;
-                xAxis = 8;
-                yAxis = 8;
+                xAxis = EditorManager.xAxis;
+                yAxis = EditorManager.yAxis;
+                xMargin = (xAxis - 8) / 2;
 
                 // Sel·lcció aleatotia del jugador inicial
                 NPColorRand = Random.Range(0, 2);
@@ -131,10 +131,10 @@ public class GameManager : MonoBehaviour
 
                 break;
             case 5:// Joc Editat 2P
-                Debug.Log("hola");
-                xMargin = 0;
-                xAxis = 8;
-                yAxis = 8;
+
+                xAxis = EditorManager.xAxis;
+                yAxis = EditorManager.yAxis;
+                xMargin = (xAxis - 8) / 2;
 
                 // reinicio el color del Non-Player al default
                 NPColor = Color.red;

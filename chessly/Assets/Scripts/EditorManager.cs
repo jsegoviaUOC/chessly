@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class EditorManager : MonoBehaviour
 {
@@ -13,19 +14,9 @@ public class EditorManager : MonoBehaviour
     public PieceEditorManager mPieceManager;
 
     // Proporcions del tauler
-    public int xAxis;
-    public int yAxis;
+    public static int xAxis;
+    public static int yAxis;
     public static int xMargin;
-
-    // Llistat de peces
-    private string[] mTypePieces = new string[5]
-    {
-        "P","T", "KN", "B", "Q"
-    };
-    private static int pieceRand;
-
-    // Array de l'ordre de les peces en el joc (pendent de fer el tamany dinàmic)
-    public static string[] mPieces = new string[16];
 
     // Objecte amb les dades guardades
     public static OptionsData optionsData;
@@ -38,28 +29,39 @@ public class EditorManager : MonoBehaviour
     public static LanguagesData languageData;
 
     // Color del jugador controlat per l'ordinador (Non-Player)
-    private static int NPColorRand;
     public static Color NPColor = Color.red;
 
-    public static string selectedPiece = "P";
-    public static string selectedColor = "W";
+    public static string selectedPiece;
+    public static string selectedColor;
 
     public static VoidPiece[,] matrixPiecesEditor;
 
     // S'executa al iniciar l'escena
     void Start()
     {
-        xMargin = 0;
-        xAxis = 8;
-        yAxis = 8;
-
-        matrixPiecesEditor = new VoidPiece[xAxis, yAxis];
-
         // Carrega les opcions sel·leccionades
         OptionsData();
 
         // Carrega les traduccions dels textos
         LanguageManager.ApplyLanguageData();
+        
+        GameObject.Find("ErrorKingDisplayerCanvas").GetComponent<Canvas>().enabled = false;
+
+        selectedPiece = "P";
+        selectedColor = "W";
+
+}
+
+    public void RunEditor()
+    {
+
+        matrixPiecesEditor = new VoidPiece[xAxis, yAxis];
+
+        xMargin = (xAxis - 8) / 2;
+
+        // Es cetra el board en la pantalla
+        mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(480 - (xMargin * 80), mBoard.GetComponent<RectTransform>().offsetMin.y);
+        mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(mBoard.GetComponent<RectTransform>().offsetMin.x, 60 + (8 - yAxis) * 40);
 
         // Creació del tauler
         mBoard.Create(xAxis, yAxis);
@@ -90,43 +92,6 @@ public class EditorManager : MonoBehaviour
         }
     }
 
-    public static Color32 getColor(string colorSlug)
-    {
-        // S'actualitza el color sel·leccionat
-        switch (colorSlug)
-        {
-            case "PW":
-                return new Color32(239, 239, 239, 255);
-            case "IV":
-                return new Color32(238, 223, 170, 255);
-            case "SB":
-                return new Color32(73, 157, 220, 255);
-            case "PB":
-                return new Color32(31, 30, 24, 255);
-            case "EB":
-                return new Color32(38, 38, 53, 255);
-            case "DR":
-                return new Color32(113, 29, 29, 255);
-            case "BWDark":
-                return new Color32(95, 95, 95, 255);
-            case "BWLight":
-                return new Color32(143, 143, 143, 255);
-            case "WCDark":
-                return new Color32(118, 65, 23, 255);
-            case "WCLight":
-                return new Color32(197, 108, 52, 255);
-            case "NEDark":
-                return new Color32(97, 47, 177, 255);
-            case "NELight":
-                return new Color32(127, 177, 47, 255);
-            case "void":
-                return new Color32(255, 255, 255, 0);
-            default:
-                return new Color32(255, 255, 255, 255);
-        }
-
-    }
-
     // Retorn al menu principal
     public void BackMenu()
     {
@@ -134,6 +99,7 @@ public class EditorManager : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
+    // Canvia l'aspecte del button seleccionat
     public void ChangeSelectedPiece(string piece)
     {
         foreach(Button button in GameObject.Find("PieceButtons").GetComponentsInChildren<Button>())
@@ -145,6 +111,7 @@ public class EditorManager : MonoBehaviour
         selectedPiece = piece;
     }
 
+    // Canvia l'aspecte del button seleccionat
     public void ChangeSelectedColor(string color)
     {
         foreach (Button button in GameObject.Find("ColorButtons").GetComponentsInChildren<Button>())
@@ -155,9 +122,102 @@ public class EditorManager : MonoBehaviour
         selectedColor = color;
     }
 
+    // Funció per actualitzar el valor del eix X
+    public void UpdateAxisX()
+    {
+        string inputText = GameObject.Find("InputAxisX").GetComponent<TMP_InputField>().text;
+        if (inputText.Length > 0)
+        {
+            xAxis = int.Parse(inputText);
+        }
+    }
+
+    // Funció per actualitzar el valor del eix Y
+    public void UpdateAxisY()
+    {
+        string inputText = GameObject.Find("InputAxisY").GetComponent<TMP_InputField>().text;
+        if (inputText.Length > 0)
+        {
+            yAxis = int.Parse(inputText);
+        }
+    }
+
+
+    // Funció per tancar el recuadre de text
+    public void CloseAxisInfo()
+    {
+        bool error = false;
+
+        if (xAxis < 5 || xAxis > 14){ error = true;  }
+        if(yAxis < 5 || yAxis > 8){ error = true;  }
+
+        if (error)
+        {
+            // S'habiliten i deshabiliten els botons i recuadres de text pertinents
+            GameObject.Find("ErrorAxisBox").GetComponentInChildren<TMPro.TextMeshProUGUI>().enabled = true;
+        }
+        else
+        {
+            // S'habiliten i deshabiliten els botons i recuadres de text pertinents
+            GameObject.Find("AxisDisplayerCanvas").GetComponent<Canvas>().enabled = false;
+
+            RunEditor();
+        }
+
+    }
+
+    // Es comprova si hi ha mínim un rei de cada color
+    public void CheckPieces()
+    {
+        bool whiteKing = false;
+        bool blackKing = false;
+
+        for (int i = 0; i < xAxis; i++)
+        {
+            for (int j = 0; j < yAxis; j++)
+            {
+                VoidPiece vp = EditorManager.matrixPiecesEditor[i, j];
+                if(vp != null)
+                {
+                    if (vp.type == "K")
+                    {
+                        if (vp.color == "W")
+                        {
+                            whiteKing = true;
+                        }
+                        else
+                        {
+                            blackKing = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!whiteKing || !blackKing)
+        {
+            GameObject.Find("ErrorKingDisplayerCanvas").GetComponent<Canvas>().enabled = true;
+            GameObject.Find("PrefEPM").GetComponent<GraphicRaycaster>().enabled = false;
+        }
+        else
+        {
+            Game();
+        }
+    }
+
+    // Funció per tancar el recuadre de text
+    public void CloseErrorKingsInfo()
+    {
+        GameObject.Find("ErrorKingDisplayerCanvas").GetComponent<Canvas>().enabled = false;
+        GameObject.Find("PrefEPM").GetComponent<GraphicRaycaster>().enabled = true;
+
+    }
+
+    // Funció per començar la partida
     public void Game()
     {
         // S'inicia l'escena del joc
         SceneManager.LoadScene("Game");
     }
+
 }
