@@ -28,11 +28,26 @@
 			"OnePlayerText" : "One Player",
 			"ClassicNPButton" : "Classic Game\n vs Computer",
 			"NonClassicNPButton" : "Random Game\n vs Computer",
+			"EditorNPButton" : "Edit Board\n vs Computer",
 			"TwoPlayersText" : "Two Players",
 			"ClassicButton" : "Classic Game",
 			"NonClassicButton" : "Random Game",
+			"EditorButton" : "Edit Board",
 			"QuitButton" : "Exit",
-			"OptionsButton" : "Options"
+			"OptionsButton" : "Options",
+			"LoginButton" : "Login Online"
+		},
+		"login" : {
+			"LabelUsername" : "Username:",
+			"PlaceholderUsername" : "Enter username",
+			"LabelPassword" : "Password:",
+			"PlaceholderPassword" : "Enter password",
+			"SignInButton" : "Sign In",
+			"SignUpButton" : "Sign Up",
+			"failLogin" : "Fail login :(",
+			"successLogin" : "Login succes!",
+			"failCreateUser" : "This user already exist.\nChange username",
+			"nullValues" : "Please enter the values"
 		}
 	},
 	"game" : {
@@ -47,5 +62,41 @@
 			"TurnWhiteText" : "Is white player's turn",
 			"TurnBlackText" : "Is black player's turn"
 		}
+	},
+	"editor" : {
+		"info": {
+			"PieceButtonsTitle" : "Select Piece:",
+			"ColorButtonsTitle" : "Select Color:"
+		},
+		"buttons" : {
+			"ReturnButton" : "Back to Menu",
+			"GameButton" : "Play Game"
+		},
+		"error" : {
+			"TitleErrorBox" : "Must put minum one king in both color",
+			"QuitErrorButton" : "Ok"
+		},
+		"conf" : {
+			"TitleAxisBox" : "Select size of Board",
+			"LabelAxisX" : "Weight",
+			"InformationAxisX" : "(Enter a number between 5 and 14)",
+			"LabelAxisY" : "Height",
+			"InformationAxisY" : "(Enter a number between 5 and 8)",
+			"PlaceholderEditor" : "Enter size",
+			"ApplyAxisButton" : "Apply",
+			"ErrorAxisBox" : "You must enter de correct numbers"
+		}
+	},
+	"pieces" : {
+		"Pawn" : "Pawn",
+		"Tower" : "Tower",
+		"Bishop" : "Bishop",
+		"Queen" : "Queen",
+		"Knight" : "Knight",
+		"King" : "King"
+	},
+	"colors" : {
+		"White" : "White",
+		"Black" : "Black"
 	}
 }

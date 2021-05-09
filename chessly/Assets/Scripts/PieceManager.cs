@@ -41,10 +41,10 @@ public class PieceManager : MonoBehaviour
         {"K",  typeof(King)},//rei
         {"Q",  typeof(Queen)},//reina
 
-        //peces no estandards (no desarroladas)
-        //{"M",  typeof(Makruk)}
-        //{"X",  typeof(Xiangqi)}
-        //{"E",  typeof(Elefant)}
+        //peces no estandards
+        {"M",  typeof(MakrukKhon)},// Khon (alfil) del joc Makruk
+        {"X",  typeof(XiangqiXiang)},// Xiang (elefant) dels escacs chinesos
+        {"D",  typeof(Dabbabah)}// Dabbāba (canyó) en algunes varians dels escacs
     };
 
     // Objecte per gestionar les traduccions
@@ -290,82 +290,63 @@ public class PieceManager : MonoBehaviour
 
         int bestScore = -1;
 
-        /*do
-        {*/
-            // S'agafa una peça al atzar del color que controla l'ordinador
-            //BasePiece testPiece = null;
-            if (currentColor == Color.white)
-            {
-              /*  int index = Random.Range(0, mWhitePieces.Count);
-                testPiece = mWhitePieces[index];*/
+        if (currentColor == Color.white)
+        {
+            auxPieces = mWhitePieces;
+        }
+        else
+        {
 
-                auxPieces = mWhitePieces;
-            }
-            else
-            {
-                /*int index = Random.Range(0, mBlackPieces.Count);
-                testPiece = mBlackPieces[index];*/
+            auxPieces = mBlackPieces;
+        }
 
-                auxPieces = mBlackPieces;
-            }
-
-            foreach (BasePiece p in auxPieces)
+        foreach (BasePiece p in auxPieces)
+        {
+            if (p.gameObject.activeInHierarchy)
             {
-                if (p.gameObject.activeInHierarchy)
+                Cell cell = null;
+                cell = p.NonPlayerMoves();
+                if (cell != null)
                 {
-                    Cell cell = null;
-                    cell = p.NonPlayerMoves();
-                    if (cell != null)
-                    {
-                        nonPlayerMoveOptions.Add(cell);
-                        nonPlayerPiecesOptions.Add(p);
-                    }
+                    nonPlayerMoveOptions.Add(cell);
+                    nonPlayerPiecesOptions.Add(p);
                 }
+            }
                 
-            }
+        }
 
-            int index = 0;
-            int indexBestPiece = 0;
+        int index = 0;
+        int indexBestPiece = 0;
 
-            //Random rng = new Random();
+        //Random rng = new Random();
 
-            int n = nonPlayerMoveOptions.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = Random.Range(0, n);
-                Cell cellValue = nonPlayerMoveOptions[k];
-                nonPlayerMoveOptions[k] = nonPlayerMoveOptions[n];
-                nonPlayerMoveOptions[n] = cellValue;
+        int n = nonPlayerMoveOptions.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = Random.Range(0, n);
+            Cell cellValue = nonPlayerMoveOptions[k];
+            nonPlayerMoveOptions[k] = nonPlayerMoveOptions[n];
+            nonPlayerMoveOptions[n] = cellValue;
 
-                BasePiece pieceValue = nonPlayerPiecesOptions[k];
-                nonPlayerPiecesOptions[k] = nonPlayerPiecesOptions[n];
-                nonPlayerPiecesOptions[n] = pieceValue;
-            }
+            BasePiece pieceValue = nonPlayerPiecesOptions[k];
+            nonPlayerPiecesOptions[k] = nonPlayerPiecesOptions[n];
+            nonPlayerPiecesOptions[n] = pieceValue;
+        }
 
-            foreach (Cell bestCell in nonPlayerMoveOptions)
-            {
+        foreach (Cell bestCell in nonPlayerMoveOptions)
+        {
                 
-                if (bestCell.score > bestScore)
-                {
-                    indexBestPiece = index;
-                    bestScore = bestCell.score;
-                }
-                index++;
+            if (bestCell.score > bestScore)
+            {
+                indexBestPiece = index;
+                bestScore = bestCell.score;
             }
-        Debug.Log(bestScore);
+            index++;
+        }
 
+        nonPlayerPiecesOptions[indexBestPiece].NonPlayerDoMove(nonPlayerMoveOptions[indexBestPiece]);
 
-            nonPlayerPiecesOptions[indexBestPiece].NonPlayerDoMove(nonPlayerMoveOptions[indexBestPiece]);
-
-            // Es comprova si està actiu l'objecte i si es pot moure legalment
-            /*if (testPiece.gameObject.activeInHierarchy && testPiece.HasMove())
-                piece = testPiece;*/
-
-        //} while (!piece);
-
-        //Funció per moure la peça
-        //piece.NonPlayerMove();
     }
 
 }

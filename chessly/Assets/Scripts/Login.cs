@@ -11,16 +11,21 @@ public class Login : MonoBehaviour
 {
     private int isLogin;
     private int ifExsist;
+    private int nullValues;
     private string username;
     private string password;
+
+    // Objecte per gestionar les traduccions
+    public static LanguagesData languageData;
 
     // Start is called before the first frame update
     void Start()
     {
         isLogin = 0;
         ifExsist = 0;
-        username = "";
-        password = "";
+        nullValues = 0;
+        username = "0";
+        password = "0";
 
         GameObject.Find("ResponseLoginDisplayerCanvas").GetComponent<Canvas>().enabled = false;
 
@@ -29,7 +34,11 @@ public class Login : MonoBehaviour
 
         GameButton.OptionsData();
 
+        // Carrega les traduccions dels textos
         LanguageManager.ApplyLanguageData();
+
+        // Recull els textos traduits
+        languageData = LanguageManager.getLanguageText();
     }
 
     // Funció per actualitzar el valor del username
@@ -55,34 +64,57 @@ public class Login : MonoBehaviour
     // Funció que intenta loguejar al usuari
     public void TryLogin()
     {
+        GameObject.Find("Main Menu").GetComponent<GraphicRaycaster>().enabled = false;
         // S'exectura la funció per a loguejar
-        StartCoroutine(SendLogin(username, password));
+        if (username != "0" && password != "0")
+        {
+            StartCoroutine(SendLogin(username, password));
+        }
+        else
+        {
+            nullValues = 1;
+            ShowLoginText();
+        }
     }
 
     // Funció que prova de crear un user nou
     public void TryCreate()
     {
+        GameObject.Find("Main Menu").GetComponent<GraphicRaycaster>().enabled = false;
         // S'executa la funció per a crear l'user
-        StartCoroutine(CreateUser(username, password));
+        if (username != "0" && password != "0")
+        {
+            StartCoroutine(CreateUser(username, password));
+        }
+        else
+        {
+            nullValues = 1;
+            ShowLoginText();
+        }
     }
 
     public void ShowLoginText()
     {
-        GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Fail login :(";
+        GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.failLogin;
 
         if (isLogin != 0)
         {
 
-            GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Login succes!";
+            GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.successLogin;
         }
 
         if (ifExsist != 0)
         {
 
-            GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "This user already exist.\nChange username";
+            GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.failCreateUser;
         }
 
-        GameObject.Find("Main Menu").GetComponent<GraphicRaycaster>().enabled = false;
+        if (nullValues != 0)
+        {
+            nullValues = 0;
+            GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.nullValues;
+        }
+
         GameObject.Find("ResponseLoginDisplayerCanvas").GetComponent<Canvas>().enabled = true;
     }
 
@@ -106,6 +138,7 @@ public class Login : MonoBehaviour
     // funció per a logueajar l'usuari
     public IEnumerator SendLogin(string username, string password)
     {
+        Debug.Log("test login");
         WWWForm form = new WWWForm();
         form.AddField("login", username);
         form.AddField("password", password);

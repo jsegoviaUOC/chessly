@@ -28,11 +28,26 @@
 			"OnePlayerText" : "Un Jugador",
 			"ClassicNPButton" : "Joc Clàssic\ncontra el PC",
 			"NonClassicNPButton" : "Joc a l'Atzar\ncontra el PC",
+			"EditorNPButton" : "Editor de tauler\ncontra el PC",
 			"TwoPlayersText" : "Dos Jugadors",
 			"ClassicButton" : "Joc Clàssic",
 			"NonClassicButton" : "Joc a l'Atzar",
+			"EditorButton" : "Editor de tauler",
 			"QuitButton" : "Sortir",
-			"OptionsButton" : "Opcions"
+			"OptionsButton" : "Opcions",
+			"LoginButton" : "Inici sessió online"
+		},
+		"login" : {
+			"LabelUsername" : "Nom d'usuari:",
+			"PlaceholderUsername" : "Introdueix el nom d'usuari",
+			"LabelPassword" : "Contrasenya:",
+			"PlaceholderPassword" : "Introdueix la contrasenya",
+			"SignInButton" : "Iniciar Sessió",
+			"SignUpButton" : "Registrar-se",
+			"failLogin" : "Error en l'inici\nde sessió :(",
+			"successLogin" : "Inici de sessió correcte!",
+			"failCreateUser" : "aquest usuari ja existeix.\nCanvia el nom d'usuari",
+			"nullValues" : "Siusplau introdueixi els valors"
 		}
 	},
 	"game" : {
@@ -47,5 +62,41 @@
 			"TurnWhiteText" : "És el torn del\n jugador blanc",
 			"TurnBlackText" : "És el torn del\n jugador negre"
 		}
+	},
+	"editor" : {
+		"info" : {
+			"PieceButtonsTitle" : "Tria Peça:",
+			"ColorButtonsTitle" : "Tria Color:"
+		},
+		"buttons" : {
+			"ReturnButton" : "Tornar al Menú",
+			"GameButton" : "Jugar Partida"
+		},
+		"error" : {
+			"TitleErrorBox" : "Ha d'haver mínim un rei de cada color",
+			"QuitErrorButton" : "Vale"
+		},
+		"conf" : {
+			"TitleAxisBox" : "Tria les dimensions del tauler",
+			"LabelAxisX" : "Amplada",
+			"InformationAxisX" : "(Introduiex un valor entre 5 i 14)",
+			"LabelAxisY" : "Alçada",
+			"InformationAxisY" : "(Introduiex un valor entre 5 i 8)",
+			"PlaceholderEditor" : "Introduiex mida",
+			"ApplyAxisButton" : "Aplicar",
+			"ErrorAxisBox" : "Posa correctamente els valors"
+		}
+	},
+	"pieces" : {
+		"Pawn" : "Peó",
+		"Tower" : "Torre",
+		"Bishop" : "Alfil",
+		"Queen" : "Reina",
+		"Knight" : "Caball",
+		"King" : "Rei"
+	},
+	"colors" : {
+		"White" : "Blanc",
+		"Black" : "Negre"
 	}
 }

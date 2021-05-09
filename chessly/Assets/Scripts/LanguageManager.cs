@@ -62,11 +62,14 @@ public class LanguageManager
         // Botons d'accés
         if (GameObject.Find("ClassicNPButton")) { GameObject.Find("ClassicNPButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.ClassicNPButton; }
         if (GameObject.Find("NonClassicNPButton")) { GameObject.Find("NonClassicNPButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.NonClassicNPButton; }
+        if (GameObject.Find("EditorNPButton")) { GameObject.Find("EditorNPButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.EditorNPButton; }
         if (GameObject.Find("ClassicButton")) { GameObject.Find("ClassicButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.ClassicButton; }
         if (GameObject.Find("NonClassicButton")) { GameObject.Find("NonClassicButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.NonClassicButton; }
+        if (GameObject.Find("EditorButton")) { GameObject.Find("EditorButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.EditorButton; }
         if (GameObject.Find("QuitButton")) { GameObject.Find("QuitButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.QuitButton; }
         if (GameObject.Find("ReturnMenuButton")) { GameObject.Find("ReturnMenuButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.ReturnMenuButton; }
         if (GameObject.Find("OptionsButton")) { GameObject.Find("OptionsButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.OptionsButton; }
+        if (GameObject.Find("LoginButton")) { GameObject.Find("LoginButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.general.LoginButton; }
 
         // Botons d'idiomes
         if (GameObject.Find("LangEngButton")) { GameObject.Find("LangEngButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.LangEngButton; }
@@ -94,11 +97,53 @@ public class LanguageManager
         if (GameObject.Find("NEButton")) { GameObject.Find("NEButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.options.boardColor.NE; }
 
         /*
+         * Traduccions menu Login
+         */
+        if (GameObject.Find("LabelUsername")) { GameObject.Find("LabelUsername").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.LabelUsername; }
+        if (GameObject.Find("PlaceholderUsername")) { GameObject.Find("PlaceholderUsername").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.PlaceholderUsername; }
+        if (GameObject.Find("LabelPassword")) { GameObject.Find("LabelPassword").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.LabelPassword; }
+        if (GameObject.Find("PlaceholderPassword")) { GameObject.Find("PlaceholderPassword").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.PlaceholderPassword; }
+        if (GameObject.Find("SignInButton")) { GameObject.Find("SignInButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.SignInButton; }
+        if (GameObject.Find("SignUpButton")) { GameObject.Find("SignUpButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.SignUpButton; }
+
+        /*
          * Traduccions Joc 
          */
-         // Textos botons del joc
+        // Textos botons del joc
         if (GameObject.Find("ReturnButton")) { GameObject.Find("ReturnButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.ReturnButton; }
         if (GameObject.Find("QuitTextButton")) { GameObject.Find("QuitTextButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.OkButton; }
+
+        /*
+         * Traduccions editor de taulers
+         */
+        if (GameObject.Find("PawnButton")) { GameObject.Find("PawnButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.pieces.Pawn; }
+        if (GameObject.Find("TowerButton")) { GameObject.Find("TowerButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.pieces.Tower; }
+        if (GameObject.Find("BishopButton")) { GameObject.Find("BishopButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.pieces.Bishop; }
+        if (GameObject.Find("KnigthButton")) { GameObject.Find("KnigthButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.pieces.Knigth; }
+        if (GameObject.Find("QueenButton")) { GameObject.Find("QueenButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.pieces.Queen; }
+        if (GameObject.Find("KingButton")) { GameObject.Find("KingButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.pieces.King; }
+        if (GameObject.Find("WhiteButton")) { GameObject.Find("WhiteButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.colors.White; }
+        if (GameObject.Find("BlackButton")) { GameObject.Find("BlackButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.colors.Black; }
+        if (GameObject.Find("GameButton")) { GameObject.Find("GameButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.buttons.GameButton; }
+        if (GameObject.Find("ReturnButton")) { GameObject.Find("ReturnButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.buttons.ReturnButton; }
+        if (GameObject.Find("ColorButtonsTitle")) { GameObject.Find("ColorButtonsTitle").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.info.ColorButtonsTitle; }
+        if (GameObject.Find("PieceButtonsTitle")) { GameObject.Find("PieceButtonsTitle").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.info.PieceButtonsTitle; }
+
+        // Textos caixa d'error
+        if (GameObject.Find("TitleErrorBox")) { GameObject.Find("TitleErrorBox").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.error.TitleErrorBox; }
+        if (GameObject.Find("QuitErrorButton")) { GameObject.Find("QuitErrorButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.error.QuitErrorButton; }
+
+        // Textos configurador del tauler
+        if (GameObject.Find("TitleAxisBox")) { GameObject.Find("TitleAxisBox").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.conf.TitleAxisBox; }
+        if (GameObject.Find("LabelAxisX")) { GameObject.Find("LabelAxisX").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.conf.LabelAxisX; }
+        if (GameObject.Find("InformationAxisX")) { GameObject.Find("InformationAxisX").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.conf.InformationAxisX; }
+        if (GameObject.Find("LabelAxisY")) { GameObject.Find("LabelAxisY").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.conf.LabelAxisY; }
+        if (GameObject.Find("InformationAxisY")) { GameObject.Find("InformationAxisY").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.conf.InformationAxisY; }
+        if (GameObject.Find("PlaceholderAxisXEditor")) { GameObject.Find("PlaceholderAxisXEditor").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.conf.PlaceholderEditor; }
+        if (GameObject.Find("PlaceholderAxisYEditor")) { GameObject.Find("PlaceholderAxisYEditor").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.conf.PlaceholderEditor; }
+        if (GameObject.Find("ApplyAxisButton")) { GameObject.Find("ApplyAxisButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.conf.ApplyAxisButton; }
+        if (GameObject.Find("ErrorAxisBox")) { GameObject.Find("ErrorAxisBox").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.editor.conf.ErrorAxisBox; }
+
     }
 
 }

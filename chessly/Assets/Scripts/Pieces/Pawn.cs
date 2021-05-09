@@ -80,7 +80,7 @@ public class Pawn : BasePiece
     }
 
     // Funció per comprovar el path de la peça
-    // El peó només pot avançar. Si és el primer moviment pot moure dos cel·les. I pot moure en diagonal una cel3la si té un enemic
+    // El peó només pot avançar. Si és el primer moviment pot moure dos cel·les. I pot moure en diagonal una cel·la si té un enemic
     protected override void CheckPathing()
     {
         // Posició actual

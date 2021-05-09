@@ -819,6 +819,7 @@ RectTransform:
   - {fileID: 1808695548}
   - {fileID: 180288436}
   - {fileID: 555206238}
+  - {fileID: 1569671194}
   m_Father: {fileID: 485572762}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1191,7 +1192,6 @@ RectTransform:
   - {fileID: 1794409141}
   - {fileID: 254343902}
   - {fileID: 296641570}
-  - {fileID: 1569671194}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2445,8 +2445,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 830081269}
-  m_Father: {fileID: 485572762}
-  m_RootOrder: 3
+  m_Father: {fileID: 254343902}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2690,7 +2690,7 @@ GameObject:
   - component: {fileID: 1765794634}
   - component: {fileID: 1765794633}
   m_Layer: 5
-  m_Name: Placeholder
+  m_Name: PlaceholderPassword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3102,7 +3102,7 @@ GameObject:
   - component: {fileID: 1858818015}
   - component: {fileID: 1858818014}
   m_Layer: 5
-  m_Name: Placeholder
+  m_Name: PlaceholderUsername
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
