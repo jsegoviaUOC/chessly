@@ -5,7 +5,7 @@ public class Queen : BasePiece
 {
 
     // Valor assignat per matar aquesta peça
-    public int price = 8;
+    public int price = 7;
 
     public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager)
     {

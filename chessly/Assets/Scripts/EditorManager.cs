@@ -50,7 +50,7 @@ public class EditorManager : MonoBehaviour
         selectedPiece = "P";
         selectedColor = "W";
 
-}
+    }
 
     public void RunEditor()
     {
@@ -216,8 +216,15 @@ public class EditorManager : MonoBehaviour
     // Funció per començar la partida
     public void Game()
     {
-        // S'inicia l'escena del joc
-        SceneManager.LoadScene("Game");
+        if(Login.idPlayer == 0)
+        {
+            // S'inicia l'escena del joc
+            SceneManager.LoadScene("Game");
+        }
+        else
+        {
+            StartCoroutine(Login.CreateGame("custom"));
+        }
     }
 
 }

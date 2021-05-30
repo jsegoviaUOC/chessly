@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
+using System.Collections;
 
 public class King : BasePiece
 {
@@ -7,7 +9,7 @@ public class King : BasePiece
     private Tower mRightTower = null;
 
     // Valor assignat per matar aquesta peça
-    public int price = 9;
+    public int price = 8;
 
     public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager)
     {
@@ -24,6 +26,11 @@ public class King : BasePiece
     // Funció de la mort del rei. Final de la partida
     public override void Kill()
     {
+        if (GameManager.isOnline)
+        {
+            StartCoroutine(SetWinner());
+        }
+
         base.Kill();
 
         // S'actualitza el valor del final de la partida
@@ -103,11 +110,20 @@ public class King : BasePiece
         for (int i = 1; i < count; i++)
         {
             int offsetX = currentX + (i * direction);
+            if (offsetX >= Board.xLimit || offsetX < 0)
+            {
+                return null;
+            }
             CellState cellState = mCurrentCell.mBoard.StateCell(offsetX, currentY, this);
 
             // si no ho estan, retorna null
             if (cellState != CellState.Free)
                 return null;
+        }
+
+        if (currentX + (count * direction) >= Board.xLimit || currentX + (count * direction) < 0)
+        {
+            return null;
         }
 
         // S'agafa la informació de la cel·la de la torre
@@ -127,5 +143,25 @@ public class King : BasePiece
 
         // Es retorna la informació de la torre per el CanCastling
         return tower;
+    }
+
+
+    // funció per a assignar un guanyador online
+    public IEnumerator SetWinner()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("winner_id", Login.idPlayer);
+
+        UnityWebRequest www = UnityWebRequest.Post("http://18.116.223.113/api/game/" + GameManager.idGame + "/set-winner/" + Login.idPlayer, form);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            Debug.Log(www.downloadHandler.text);
+        }
     }
 }

@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using UnityEngine.Networking;
+using System.Collections;
 
 public abstract class BasePiece : EventTrigger
 {
@@ -27,7 +29,7 @@ public abstract class BasePiece : EventTrigger
     // Cel·les resaltades
     protected List<Cell> mPossiblePathCells = new List<Cell>();
 
-    public int price = 0;
+    public int price;
 
     protected bool nonPlayerTurnOn = false;
 
@@ -250,6 +252,11 @@ public abstract class BasePiece : EventTrigger
             return;
         }
 
+        if (GameManager.isOnline)
+        {
+            StartCoroutine(PostMove(mCurrentCell, mTargetCell));
+        }
+
         // Es mou la peça
         Move();
 
@@ -262,7 +269,10 @@ public abstract class BasePiece : EventTrigger
         {
             mPieceManager.ShowTextInfo();
         }
+
     }
+
+    /* FUNCIONS SINGLE PLAYER */
 
     // Moviment al atzar del non-player, el jugador controlat per l'ordinador
     public Cell NonPlayerMoves()
@@ -308,10 +318,45 @@ public abstract class BasePiece : EventTrigger
         nonPlayerTurnOn = false;
     }
 
-    public override void OnPointerClick(PointerEventData eventData)
-    {
-        base.OnPointerClick(eventData);
+    /* FUNCIONS ONLINE GAME */
 
-        Debug.Log("HOLA");
+    public void OtherPlayerMove(Cell target)
+    {
+        mTargetCell = target;
+
+        Move();
+    }
+    
+    // funció per a crear moviment
+    public IEnumerator PostMove(Cell current, Cell target)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("x_current", current.mBoardPosition.x);
+        form.AddField("y_current", current.mBoardPosition.y);
+        form.AddField("x_target", target.mBoardPosition.x);
+        form.AddField("y_target", target.mBoardPosition.y);
+        form.AddField("game_id", GameManager.idGame);
+        //form.AddField("player_id", Login.idPlayer);
+        form.AddField("player_id", 1);
+
+       /* Debug.Log("xCur: "+current.mBoardPosition.x);
+        Debug.Log("yCur: " + current.mBoardPosition.y);
+        Debug.Log("xTar: "+ target.mBoardPosition.x);
+        Debug.Log("yTar: " + target.mBoardPosition.y);
+        Debug.Log("idGame: " + GameManager.idGame);
+        Debug.Log("idPlayer: " + Login.idPlayer);*/
+
+        UnityWebRequest www = UnityWebRequest.Post("http://18.116.223.113/api/game/" + GameManager.idGame + "/move", form);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            Debug.Log(www.downloadHandler.text);
+            int id = int.Parse(www.downloadHandler.text);
+        }
     }
 }

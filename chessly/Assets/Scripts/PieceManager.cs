@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class PieceManager : MonoBehaviour
 {
+    private Board mBoard;
+
     // Control per saber si ha acabat la partida
     public bool isEndGame = false;
 
@@ -30,6 +35,8 @@ public class PieceManager : MonoBehaviour
     private List<string> mBlackPiecesOrder;
     private List<string> mAuxiliarPiecesOrder;
 
+    private int gameStatus = 0;
+
     // Creació d'un diccionari per relacionar l'array de peces amb el tipus de peça
     private Dictionary<string, Type> mPieceLibrary = new Dictionary<string, Type>()
     {
@@ -50,20 +57,23 @@ public class PieceManager : MonoBehaviour
     // Objecte per gestionar les traduccions
     public static LanguagesData languageData;
 
+    // Boolean per a gestionar el torn online
+    private bool yourTurn;
+
     public void Setup(Board board)
     {
+        // S'assigna el tauler
+        mBoard = board;
+
         // Recull els textos traduits
         languageData = LanguageManager.getLanguageText();
 
-        // Es deshabilita el recuadre informatiu de la partida
-        textDisplayCanvas.GetComponent<Canvas>().enabled = false;
-
         // Llistat de peces incials de cada color
-        for(int i = 0; i < Board.xLimit; i++)
+        for (int i = 0; i < Board.xLimit; i++)
         {
             for (int j = 0; j < Board.yLimit; j++)
             {
-                VoidPiece vPiece = GameManager.matrixPieces[i,j];
+                VoidPiece vPiece = GameManager.matrixPieces[i, j];
                 if (vPiece != null)
                 {
                     Color teamColor;
@@ -96,9 +106,19 @@ public class PieceManager : MonoBehaviour
             }
         }
 
-        // Inici del torn de les blanques
-        currentColor = Color.black;
-        SwitchPlayer();
+        if (GameManager.isOnline)
+        {
+            currentColor = Color.white;
+            StartCoroutine(GetGameStatus(GameManager.idGame));
+            SetOnlineGame();
+        }
+        else
+        {
+            // Inici del torn de les blanques
+            currentColor = Color.black;
+            GameObject.Find("CanvasExitButton").GetComponent<Canvas>().enabled = false;
+            SwitchPlayer();
+        }
     }
 
     // Funció per crear una peça
@@ -121,7 +141,7 @@ public class PieceManager : MonoBehaviour
 
     // Funció que inicialitza les peces com actives
     // Permet el control del torn no permentent moure el color que no té torn
-    private void changeStateActivePieces(List<BasePiece> allPieces, bool value)
+    private void ChangeStateActivePieces(List<BasePiece> allPieces, bool value)
     {
         // Per a cada peça del color, aquesta s'activa o no
         foreach (BasePiece piece in allPieces)
@@ -147,7 +167,8 @@ public class PieceManager : MonoBehaviour
             GameObject.Find("QuitTextButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.OkButton;
 
             // Si era una partida contra l'ordinador, es torna a calcular al atzar el color assignat a aquest
-            if (GameManager.NPColor == Color.white || GameManager.NPColor == Color.black) {
+            if (GameManager.NPColor == Color.white || GameManager.NPColor == Color.black)
+            {
                 int NPColorRand = Random.Range(0, 2);
                 GameManager.NPColor = NPColorRand == 1 ? Color.white : Color.black;
             }
@@ -156,8 +177,8 @@ public class PieceManager : MonoBehaviour
         // Es comprova de qui es el torn i s'ativen les peces d'aquest color i es desactiven les de l'altre
         if (currentColor != Color.white)
         {
-            changeStateActivePieces(mWhitePieces, true);
-            changeStateActivePieces(mBlackPieces, false);
+            ChangeStateActivePieces(mWhitePieces, true);
+            ChangeStateActivePieces(mBlackPieces, false);
 
             foreach (BasePiece piece in mPromotedPieces)
             {
@@ -176,8 +197,8 @@ public class PieceManager : MonoBehaviour
         }
         else
         {
-            changeStateActivePieces(mWhitePieces, false);
-            changeStateActivePieces(mBlackPieces, true);
+            ChangeStateActivePieces(mWhitePieces, false);
+            ChangeStateActivePieces(mBlackPieces, true);
 
             foreach (BasePiece piece in mPromotedPieces)
             {
@@ -190,13 +211,13 @@ public class PieceManager : MonoBehaviour
                     piece.enabled = false;
                 }
             }
-            
+
             // S'actualitza el color del jugador actual
             currentColor = Color.black;
         }
 
         // Si el joc és contra l'ordinador, s'executen la funció del torn de l'ordinador i el canvi de torn consecutivament
-        if(currentColor == GameManager.NPColor)
+        if (currentColor == GameManager.NPColor)
         {
             NonPlayerTurn();
             SwitchPlayer();
@@ -247,8 +268,8 @@ public class PieceManager : MonoBehaviour
     public void ShowTextInfo()
     {
         // Es dehabiliten els moviments de les peces i el botó per sortir de la partida
-        changeStateActivePieces(mWhitePieces, false);
-        changeStateActivePieces(mBlackPieces, false);
+        ChangeStateActivePieces(mWhitePieces, false);
+        ChangeStateActivePieces(mBlackPieces, false);
         GameObject.Find("ButtonSpace").GetComponent<Canvas>().enabled = false;
 
         // Si el joc ha acabat el text que es mostra és diferent
@@ -264,6 +285,12 @@ public class PieceManager : MonoBehaviour
             textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = nextTurnText;
         }
 
+        if (GameManager.isOnline)
+        {
+            yourTurn = false;
+            ToggleOnlinePieces(false);
+        }
+
         // Es mostra el recuadre d'informació
         textDisplayCanvas.GetComponent<Canvas>().enabled = true;
     }
@@ -272,18 +299,21 @@ public class PieceManager : MonoBehaviour
     public void CloseTextInfo()
     {
         // Finalitza el turn del color actual
-        SwitchPlayer();
+        if (!GameManager.isOnline)
+        {
+            SwitchPlayer();
+        }
 
         // S'habiliten i deshabiliten els botons i recuadres de text pertinents
         textDisplayCanvas.GetComponent<Canvas>().enabled = false;
         GameObject.Find("ButtonSpace").GetComponent<Canvas>().enabled = true;
     }
 
+    /* FUNCIONS SINGLE PLAYER GAME */
+
     // Funció del torn del NP (Non-Player)
     private void NonPlayerTurn()
     {
-        //BasePiece piece = null;
-
         List<Cell> nonPlayerMoveOptions = new List<Cell>();
         List<BasePiece> nonPlayerPiecesOptions = new List<BasePiece>();
         List<BasePiece> auxPieces = null;
@@ -296,7 +326,6 @@ public class PieceManager : MonoBehaviour
         }
         else
         {
-
             auxPieces = mBlackPieces;
         }
 
@@ -312,7 +341,7 @@ public class PieceManager : MonoBehaviour
                     nonPlayerPiecesOptions.Add(p);
                 }
             }
-                
+
         }
 
         int index = 0;
@@ -336,7 +365,7 @@ public class PieceManager : MonoBehaviour
 
         foreach (Cell bestCell in nonPlayerMoveOptions)
         {
-                
+
             if (bestCell.score > bestScore)
             {
                 indexBestPiece = index;
@@ -347,6 +376,158 @@ public class PieceManager : MonoBehaviour
 
         nonPlayerPiecesOptions[indexBestPiece].NonPlayerDoMove(nonPlayerMoveOptions[indexBestPiece]);
 
+    }
+
+    /* FUNCIONS ONLINE GAME */
+
+    public void SetOnlineGame()
+    {
+        if (GameManager.yourColor == Color.white)
+        {
+            yourTurn = true;
+            ChangeStateActivePieces(mWhitePieces, true);
+        }
+        else
+        {
+            yourTurn = false;
+            ChangeStateActivePieces(mWhitePieces, false);
+        }
+        ChangeStateActivePieces(mBlackPieces, false);
+    }
+
+    public void ToggleOnlinePieces(bool state)
+    {
+        List<BasePiece> pieces = GameManager.yourColor == Color.white ? mWhitePieces : mBlackPieces;
+
+        ChangeStateActivePieces(pieces, state);
+    }
+
+    public void ExitButton()
+    {
+        StartCoroutine(GameManager.ExitGame());
+    }
+
+    // Funció que controla el flux del joc online
+    public IEnumerator GetGameStatus(int idGame)
+    {
+        // Es deshabiliten els botons
+        GameObject.Find("ButtonSpace").GetComponent<Canvas>().enabled = false;
+
+        // Es mostra un cartell d'esperant contrincant
+        textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "waiting other player";
+        textDisplayCanvas.GetComponent<Canvas>().enabled = true;
+        GameObject.Find("CanvasQuitButton").GetComponent<Canvas>().enabled = false;
+        GameObject.Find("ExitButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.ReturnButton;
+        GameObject.Find("CanvasExitButton").GetComponent<Canvas>().enabled = true;
+
+        while (gameStatus != 1) // Mentre no hi hagi un contrincant
+        {
+            yield return new WaitForSeconds(8);
+            StartCoroutine(GetStatus(idGame));
+        }
+
+        // Es treu el cartell d'espra de contrincant i s'habiliten els botons
+        GameObject.Find("ButtonSpace").GetComponent<Canvas>().enabled = true;
+        textDisplayCanvas.GetComponent<Canvas>().enabled = false;
+        GameObject.Find("CanvasExitButton").GetComponent<Canvas>().enabled = false;
+        GameObject.Find("CanvasQuitButton").GetComponent<Canvas>().enabled = true;
+
+        while (gameStatus != 2) // Mentre no hi hagi un guanyador
+        {
+            yield return new WaitForSeconds(10);
+            StartCoroutine(GetStatus(idGame));
+
+            if (!yourTurn)
+            {
+                StartCoroutine(GetLastMove(idGame));
+            }
+        }
+
+        StartCoroutine(GetWinner(idGame));
+    }
+
+    public IEnumerator GetStatus(int idGame)
+    {
+        UnityWebRequest www = UnityWebRequest.Get("http://18.116.223.113/api/game-status/" + idGame);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            //Debug.Log(www.downloadHandler.text);
+            gameStatus = int.Parse(www.downloadHandler.text);
+        }
+    }
+
+    public IEnumerator GetLastMove(int idGame)
+    {
+        UnityWebRequest www = UnityWebRequest.Get("http://18.116.223.113/api/game/" + idGame + "/last-move");
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            Debug.Log(www.downloadHandler.text);
+            if (www.downloadHandler.text != "")
+            {
+                var jsonMove = JsonUtility.FromJson<OnlineMoveData>(www.downloadHandler.text);
+
+                //if (jsonMove.data.playerId != Login.idPlayer && !yourTurn)
+                if (jsonMove.data.playerId != 1 && !yourTurn)
+                {
+                    // Moviment del contrincant online
+                    Cell currentCell = mBoard.mAllCells[jsonMove.data.xCurrent, jsonMove.data.yCurrent];
+                    Cell targetCell = mBoard.mAllCells[jsonMove.data.xTarget, jsonMove.data.yTarget];
+                    currentCell.mCurrentPiece.OtherPlayerMove(targetCell);
+
+                    ToggleOnlinePieces(true);
+                    yourTurn = true;
+                }
+            }
+        }
+
+    }
+
+    public IEnumerator GetWinner(int idGame)
+    {
+        UnityWebRequest www = UnityWebRequest.Get("http://18.116.223.113/api/game/" + idGame);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            var json = JsonUtility.FromJson<OnlineGameData>(www.downloadHandler.text);
+
+            Debug.Log("get winner");
+            Debug.Log(www.downloadHandler.text);
+
+            string winnerText = "";
+
+            if (json.data.winnerId != Login.idPlayer)
+            {
+                winnerText = "Sorry, You lose :(";
+            }
+            else
+            {
+                winnerText = "Congratulations! You win!";
+            }
+
+            // Es deshabiliten els botons
+            GameObject.Find("ButtonSpace").GetComponent<Canvas>().enabled = false;
+
+            // Es mostra un cartell del guanyador
+            textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = winnerText;
+            textDisplayCanvas.GetComponent<Canvas>().enabled = true;
+        }
     }
 
 }

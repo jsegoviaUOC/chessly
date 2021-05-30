@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class GameManager : MonoBehaviour
 
     // Definició del gestor de peces
     public PieceManager mPieceManager;
+
+    // Recuadre de text amb informació de la partida
+    public GameObject textDisplayCanvas;
 
     // Proporcions del tauler
     public int xAxis;
@@ -42,19 +46,30 @@ public class GameManager : MonoBehaviour
     // Color del jugador controlat per l'ordinador (Non-Player)
     private static int NPColorRand;
     public static Color NPColor = Color.red;
+    public static Color yourColor;
+
+    // indicador de si la partida és online
+    public static bool isOnline;
+    public static int idGame;
 
     // S'executa al iniciar l'escena
     void Start()
     {
-        // Definició del tipus de joc
-        typeGame();
-
         // Carrega les opcions sel·leccionades
         OptionsData();
 
         // Carrega les traduccions dels textos
         LanguageManager.ApplyLanguageData();
 
+        // Es deshabilita el recuadre informatiu de la partida
+        textDisplayCanvas.GetComponent<Canvas>().enabled = false;
+        
+        // Definició del tipus de joc
+        TypeGame();
+    }
+
+    void Run()
+    { 
         // Creació del tauler
         mBoard.Create(xAxis, yAxis);
 
@@ -63,9 +78,10 @@ public class GameManager : MonoBehaviour
     }
 
     // Funció per definir el tipus de joc
-    public void typeGame()
+    public void TypeGame()
     {
-        
+        isOnline = false;
+
         switch (GameButton.typeGame)
         {
             case 1:// Joc Random (NonClassic)
@@ -84,6 +100,7 @@ public class GameManager : MonoBehaviour
                 // reinicio el color del Non-Player al default
                 NPColor = Color.red;
 
+                Run();
                 break;
             case 2:// Joc clàssic contra l'ordinador
 
@@ -93,13 +110,23 @@ public class GameManager : MonoBehaviour
 
                 // Sel·lcció aleatotia del jugador inicial
                 NPColorRand = Random.Range(0, 2);
-                NPColor = NPColorRand == 1 ? Color.white : Color.black;
+                if(NPColorRand == 1)
+                {
+                    NPColor = Color.white;
+                    yourColor = Color.black;
+                }
+                else
+                {
+                    yourColor = Color.white;
+                    NPColor = Color.black;
+                }
 
                 // Ordre de les peces en el joc classic
                 SetClassicPieces();
 
+                Run();
                 break;
-            case 3:// Joc Random (NonClassic)contra l'ordinador
+            case 3:// Joc Random (NonClassic) contra l'ordinador
 
                 xMargin = Random.Range(0, 3);
                 xAxis = 8 + xMargin * 2;
@@ -113,8 +140,18 @@ public class GameManager : MonoBehaviour
                 SetRandomPieces();
 
                 NPColorRand = Random.Range(0, 2);
-                NPColor = NPColorRand == 1 ? Color.white : Color.black;
-                
+                if (NPColorRand == 1)
+                {
+                    NPColor = Color.white;
+                    yourColor = Color.black;
+                }
+                else
+                {
+                    yourColor = Color.white;
+                    NPColor = Color.black;
+                }
+
+                Run();
                 break;
             case 4:// Joc Editat contra l'ordinador
 
@@ -129,6 +166,7 @@ public class GameManager : MonoBehaviour
                 // Ordre de les peces en el joc classic
                 matrixPieces = EditorManager.matrixPiecesEditor;
 
+                Run();
                 break;
             case 5:// Joc Editat 2P
 
@@ -141,6 +179,15 @@ public class GameManager : MonoBehaviour
 
                 // Ordre de les peces en el joc classic
                 matrixPieces = EditorManager.matrixPiecesEditor;
+
+                Run();
+                break;
+            case 6: //partida online
+
+                NPColor = Color.red;
+                idGame = Login.idNewGame;
+
+                StartCoroutine(GetGame());
 
                 break;
             default:// Joc clàssic
@@ -155,6 +202,7 @@ public class GameManager : MonoBehaviour
                 // reinicio el color del Non-Player al default
                 NPColor = Color.red;
 
+                Run();
                 break;
         }
         
@@ -217,8 +265,17 @@ public class GameManager : MonoBehaviour
     // Retorn al menu principal
     public void BackMenu()
     {
-        // Carrega la escena del menu principal
-        SceneManager.LoadScene("Main Menu");
+        if (isOnline)
+        {
+            // Carrega la escena de Login
+            SendExitGame();
+            SceneManager.LoadScene("Login");
+        }
+        else
+        {
+            // Carrega la escena del menu principal
+            SceneManager.LoadScene("Main Menu");
+        }
     }
 
     private void SetClassicPieces()
@@ -249,6 +306,7 @@ public class GameManager : MonoBehaviour
        
     }
 
+    //intancia la matriu de peces random
     private void SetRandomPieces()
     {
         int piecesInLine = 8;
@@ -295,4 +353,77 @@ public class GameManager : MonoBehaviour
 
     }
 
+    /* FUNCIONS GAME ONLINE */
+
+    public void SendExitGame()
+    {
+        StartCoroutine(ExitGame());
+    }
+
+    // funció per a get game
+    public IEnumerator GetGame()
+    {
+        UnityWebRequest www = UnityWebRequest.Get("http://18.116.223.113/api/game/" + Login.idNewGame);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            var json = JsonUtility.FromJson<OnlineGameData>(www.downloadHandler.text);
+
+            xAxis = json.data.xAxis;
+            yAxis = json.data.yAxis;
+            xMargin = (xAxis - 8) / 2;
+
+            matrixPieces = new VoidPiece[xAxis, yAxis];
+            
+            var base64EncodedBytes = System.Convert.FromBase64String(json.data.pieces);
+            string[] piecesString = System.Text.Encoding.UTF8.GetString(base64EncodedBytes).Split(',');
+
+            foreach (string piece in piecesString)
+            {
+                string[] infoPiece = piece.Split('-');
+
+                VoidPiece vP = new VoidPiece();
+                vP.color = infoPiece[3];
+                vP.type = infoPiece[2];
+
+                matrixPieces[int.Parse(infoPiece[0]), int.Parse(infoPiece[1])] = vP;
+            }
+
+            if (json.data.colorCreator == "B")
+            {
+                yourColor = json.data.creatorId == Login.idPlayer ? Color.black: Color.white;
+            }
+            else
+            {
+                yourColor = json.data.creatorId == Login.idPlayer ? Color.white : Color.black;
+            }
+
+            isOnline = true;
+
+            Run();
+        }
+    }
+
+    public static IEnumerator ExitGame()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("player_id", Login.idPlayer);
+
+        UnityWebRequest www = UnityWebRequest.Post("http://18.116.223.113/api/game/" + Login.idNewGame + "/exit/" + Login.idPlayer, form);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            //Debug.Log(www.downloadHandler.text);
+        }
+    }
 }

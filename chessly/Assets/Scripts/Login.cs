@@ -3,17 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
-using System.Collections;
+using System;
 using UnityEngine.SceneManagement;
 using TMPro;
 
 public class Login : MonoBehaviour
 {
-    private int isLogin;
+    private int isLogin = 0;
     private int ifExsist;
     private int nullValues;
     private string username;
     private string password;
+
+    private int selection = 0;
+
+    public static VoidPiece[,] matrixPieces;
+
+    public static int idNewGame;
+
+    public static int idPlayer = 0;
 
     // Objecte per gestionar les traduccions
     public static LanguagesData languageData;
@@ -21,11 +29,21 @@ public class Login : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        isLogin = 0;
         ifExsist = 0;
         nullValues = 0;
         username = "0";
         password = "0";
+
+        if (idPlayer == 0)
+        {
+            GameObject.Find("SelectMenu").GetComponent<Canvas>().enabled = false;
+        }
+        else
+        {
+            GameObject.Find("Main Menu").GetComponent<Canvas>().enabled = false;
+        }
+
+        GameObject.Find("TypeSelectionMenu").GetComponent<Canvas>().enabled = false;
 
         GameObject.Find("ResponseLoginDisplayerCanvas").GetComponent<Canvas>().enabled = false;
 
@@ -39,6 +57,16 @@ public class Login : MonoBehaviour
 
         // Recull els textos traduits
         languageData = LanguageManager.getLanguageText();
+    }
+
+    // funció per accedir al menu d'opcions
+    public void SelectMenu()
+    {
+        // Tanca el menú principal
+        GameObject.Find("Main Menu").GetComponent<Canvas>().enabled = false;
+
+        // Obre el menú d'opcions
+        GameObject.Find("SelectMenu").GetComponent<Canvas>().enabled = true;
     }
 
     // Funció per actualitzar el valor del username
@@ -65,6 +93,8 @@ public class Login : MonoBehaviour
     public void TryLogin()
     {
         GameObject.Find("Main Menu").GetComponent<GraphicRaycaster>().enabled = false;
+        GameObject.Find("SelectMenu").GetComponent<GraphicRaycaster>().enabled = false;
+
         // S'exectura la funció per a loguejar
         if (username != "0" && password != "0")
         {
@@ -81,6 +111,8 @@ public class Login : MonoBehaviour
     public void TryCreate()
     {
         GameObject.Find("Main Menu").GetComponent<GraphicRaycaster>().enabled = false;
+        GameObject.Find("SelectMenu").GetComponent<GraphicRaycaster>().enabled = false;
+
         // S'executa la funció per a crear l'user
         if (username != "0" && password != "0")
         {
@@ -118,12 +150,61 @@ public class Login : MonoBehaviour
         GameObject.Find("ResponseLoginDisplayerCanvas").GetComponent<Canvas>().enabled = true;
     }
 
-    // Retorn al menu principal
+    // Mostra el cuadre de text
     public void HideLoginText()
     {
         // Amaga el text sobre el response del login
         GameObject.Find("ResponseLoginDisplayerCanvas").GetComponent<Canvas>().enabled = false;
         GameObject.Find("Main Menu").GetComponent<GraphicRaycaster>().enabled = true;
+        GameObject.Find("SelectMenu").GetComponent<GraphicRaycaster>().enabled = true;
+    }
+
+    // Guarda l'elecció del jugador sobre buscar partida o crear-ne una
+    public void SaveSelection(int s)
+    {
+        // s'amaga el menú de selecció
+        GameObject.Find("SelectMenu").GetComponent<Canvas>().enabled = false;
+        GameObject.Find("TypeSelectionMenu").GetComponent<Canvas>().enabled = true;
+
+        //guardem la selecció
+        selection = s;
+    }
+
+    // Botó per tornar a mostrar el menú de selecció
+    public void BackToSelect()
+    {
+        // es mostra el menú de selecció
+        GameObject.Find("SelectMenu").GetComponent<Canvas>().enabled = true;
+        GameObject.Find("TypeSelectionMenu").GetComponent<Canvas>().enabled = false;
+
+        // esborra la selecció
+        selection = 0;
+    }
+
+    // Gestor del botó classic game
+    public void ClassicGamebutton()
+    {
+        if (selection == 1)
+        {
+            StartCoroutine(CreateGame("classic"));
+        }
+        else
+        {
+            StartCoroutine(AddUserToGame("classic"));
+        }
+    }
+
+    // Gestor del botó classic game
+    public void CustomGamebutton()
+    {
+        if (selection == 1)
+        {
+            SceneManager.LoadScene("BoardEditor");
+        }
+        else
+        {
+            StartCoroutine(AddUserToGame("custom"));
+        }
     }
 
     // Retorn al menu principal
@@ -133,7 +214,15 @@ public class Login : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
     }
 
-    // Funcions get/post
+    // Tanca la sessió online
+    public void LogOut()
+    {
+        isLogin = 0;
+        // Recarrega l'escena
+        SceneManager.LoadScene("Login");
+    }
+
+    /* Funcions get/post */
 
     // funció per a logueajar l'usuari
     public IEnumerator SendLogin(string username, string password)
@@ -152,11 +241,13 @@ public class Login : MonoBehaviour
         }
         else
         {
-            Debug.Log("Form upload complete!");
-
             Debug.Log(www.downloadHandler.text);
+
             isLogin = int.Parse(www.downloadHandler.text);
 
+            idPlayer = isLogin;
+
+            SelectMenu();
             ShowLoginText();
         }
     }
@@ -177,21 +268,149 @@ public class Login : MonoBehaviour
         }
         else
         {
-            Debug.Log("Form upload complete!");
-
             Debug.Log(www.downloadHandler.text);
             int id = int.Parse(www.downloadHandler.text);
             if (id != 0)
             {
                 isLogin = id;
                 ifExsist = 0;
+
+                idPlayer = isLogin;
             }
             else
             {
                 ifExsist = 1;
             }
 
+            SelectMenu();
             ShowLoginText();
+        }
+    }
+
+    // funció per a crear partida
+    public static IEnumerator CreateGame(string typeGame)
+    {
+        int xAxis = 0;
+        int yAxis = 0;
+
+        int randColor = UnityEngine.Random.Range(0, 2);
+        string creatorColor = randColor == 1 ? "W" : "B";
+
+        switch (typeGame)
+        {
+            case "custom":
+                matrixPieces = EditorManager.matrixPiecesEditor;
+                xAxis = EditorManager.xAxis;
+                yAxis = EditorManager.yAxis;
+                break;
+            case "classic":
+
+                xAxis = 8;
+                yAxis = 8;
+
+                string[] listPiecesClassic = new string[] {
+                    "T", "KN", "B", "Q", "K", "B", "KN", "T"
+                };
+
+                string[] colorsClassic = new string[] { "W", "B" };
+
+                matrixPieces = new VoidPiece[8, 8];
+
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 2; j++)
+                    {
+                        VoidPiece vP = new VoidPiece();
+                        vP.Setup(listPiecesClassic[i], colorsClassic[j]);
+
+                        matrixPieces[i, j * 7] = vP;
+
+                        VoidPiece vPP = new VoidPiece();
+                        vPP.Setup("P", colorsClassic[j]);
+
+                        matrixPieces[i, 5 * j + 1] = vPP;
+                    }
+                }
+                break;
+        }
+
+        string stringJsonPieces = "";
+        for (int i = 0; i < xAxis; i++)
+        {
+            for (int j = 0; j < yAxis; j++)
+            {
+                VoidPiece vPiece = matrixPieces[i, j];
+                if (vPiece != null)
+                {
+                    stringJsonPieces = String.Concat(stringJsonPieces, i, "-", j, "-", vPiece.type, "-", vPiece.color, ",");
+                }
+
+            }
+        }
+        stringJsonPieces = stringJsonPieces.TrimEnd(',');
+
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(stringJsonPieces);
+        stringJsonPieces = System.Convert.ToBase64String(plainTextBytes);
+
+        WWWForm form = new WWWForm();
+        form.AddField("pieces", stringJsonPieces);
+        form.AddField("type", typeGame);
+        form.AddField("color_creator", creatorColor);
+        form.AddField("creator_id", idPlayer);
+        form.AddField("x_axis", xAxis);
+        form.AddField("y_axis", yAxis);
+
+        UnityWebRequest www = UnityWebRequest.Post("http://18.116.223.113/api/game", form);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            Debug.Log(www.downloadHandler.text);
+            int id = int.Parse(www.downloadHandler.text);
+
+            GameButton.typeGame = 6;
+            idNewGame = id;
+
+            SceneManager.LoadScene("Game");
+        }
+    }
+
+
+    //Funció per a crear l'usuari
+    public IEnumerator AddUserToGame(string typeGame)
+    {
+        WWWForm form = new WWWForm();
+        
+        form.AddField("type", typeGame);
+
+        UnityWebRequest www = UnityWebRequest.Post("http://18.116.223.113/api/connect-to-game/"+idPlayer, form);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            Debug.Log(www.downloadHandler.text);
+            if (www.downloadHandler.text != "")
+            {
+                int id = int.Parse(www.downloadHandler.text);
+
+                GameButton.typeGame = 6;
+                idNewGame = id;
+
+                SceneManager.LoadScene("Game");
+            }
+            else
+            {
+                GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Actualment no hay partides obertes\nd'aquest estil de joc";
+                GameObject.Find("ResponseLoginDisplayerCanvas").GetComponent<Canvas>().enabled = true;
+            }
         }
     }
 }
