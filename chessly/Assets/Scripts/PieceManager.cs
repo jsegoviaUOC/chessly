@@ -67,8 +67,9 @@ public class PieceManager : MonoBehaviour
     // S'utilitzat la funció update per al contador de temps del joc online
     public void Update()
     {
-        if (GameManager.isOnline && gameStatus==2)
+        if (GameManager.isOnline && gameStatus==1)
         {
+
             timer -= Time.deltaTime;
             int intTimer = timer > 0f ? (int)timer : 0;
             GameObject.Find("Timer").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "" + (int)timer;
@@ -319,7 +320,15 @@ public class PieceManager : MonoBehaviour
         }
         else
         {
-            string nextTurnText = currentColor != Color.white ? languageData.game.info.TurnWhiteText : languageData.game.info.TurnBlackText;
+            string nextTurnText = "";
+            if (!GameManager.isOnline)
+            {
+                nextTurnText = currentColor != Color.white ? languageData.game.info.TurnWhiteText : languageData.game.info.TurnBlackText;
+            }
+            else
+            {
+                nextTurnText = GameManager.yourColor != Color.white ? languageData.game.info.TurnWhiteText : languageData.game.info.TurnBlackText;
+            }
             textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = nextTurnText;
         }
 
@@ -474,7 +483,7 @@ public class PieceManager : MonoBehaviour
 
         while (gameStatus != 1) // Mentre no hi hagi un contrincant
         {
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSeconds(3);
             StartCoroutine(GetStatus(idGame));
         }
 
@@ -496,7 +505,7 @@ public class PieceManager : MonoBehaviour
 
         while (gameStatus != 2) // Mentre no hi hagi un guanyador
         {
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSeconds(3);
             StartCoroutine(GetStatus(idGame));
 
             if (!yourTurn)
