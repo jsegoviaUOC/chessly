@@ -261,10 +261,15 @@ public class Login : MonoBehaviour
 
             isLogin = int.Parse(www.downloadHandler.text);
 
-            idPlayer = isLogin;
-            namePlayer = username;
 
-            SelectMenu();
+            if (isLogin != 0)
+            {
+                idPlayer = isLogin;
+                namePlayer = username;
+
+                SelectMenu();
+            }
+
             ShowLoginText();
         }
     }
@@ -294,13 +299,14 @@ public class Login : MonoBehaviour
 
                 idPlayer = isLogin;
                 namePlayer = username;
+                
+                SelectMenu();
             }
             else
             {
                 ifExsist = 1;
             }
 
-            SelectMenu();
             ShowLoginText();
         }
     }
