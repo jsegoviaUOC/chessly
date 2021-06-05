@@ -289,7 +289,7 @@ public class PieceManager : MonoBehaviour
         pawn.SilenceKill();
 
         // Es crea la peça promocionada
-        // Per simplificar l'algoritme, de moment només es promociona a Reina
+        // Per simplificar l'algoritme, només es promociona a Reina
         BasePiece promotedPiece = CreatePiece(typeof(Queen));
         promotedPiece.Setup(teamColor, spriteColor, this, soundMove, soundDead);
 
