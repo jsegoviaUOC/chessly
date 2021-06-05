@@ -266,7 +266,7 @@ public class PieceManager : MonoBehaviour
         // S'eliminen totes les peces
         foreach (BasePiece piece in mPromotedPieces)
         {
-            piece.Kill();
+            piece.SilenceKill();
             Destroy(piece.gameObject);
         }
 
@@ -285,7 +285,7 @@ public class PieceManager : MonoBehaviour
     public void PromotePiece(Pawn pawn, Cell cell, Color teamColor, Color spriteColor)
     {
         // Primer s'elimina l'objecte peó
-        pawn.Kill();
+        pawn.SilenceKill();
 
         // Es crea la peça promocionada
         // Per simplificar l'algoritme, de moment només es promociona a Reina
@@ -553,6 +553,10 @@ public class PieceManager : MonoBehaviour
                     yourTurn = true;
                     timer = 300.0f;
                 }
+            }
+            else
+            {
+                timer = 300.0f;
             }
         }
     }

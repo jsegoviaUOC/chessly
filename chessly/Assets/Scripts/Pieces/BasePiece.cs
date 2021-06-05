@@ -96,6 +96,17 @@ public abstract class BasePiece : EventTrigger
         gameObject.SetActive(false);
     }
 
+    // Fucnió per eliminar la peça
+    public virtual void SilenceKill()
+    {
+        // Es borra la informació sobre la cel·la actual que ocupa
+        mCurrentCell.mCurrentPiece = null;
+
+        // S'elimina l'objecte
+        gameObject.SetActive(false);
+    }
+
+
     // Funció per saber si es pot moure
     public bool HasMove()
     {

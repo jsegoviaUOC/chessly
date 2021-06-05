@@ -314,7 +314,10 @@ public class Login : MonoBehaviour
         int randColor = UnityEngine.Random.Range(0, 2);
         string creatorColor = randColor == 1 ? "W" : "B";
         
-        GameObject.Find("TypeSelectionMenu").GetComponent<GraphicRaycaster>().enabled = false;
+        if(typeGame!= "custom")
+        {
+            GameObject.Find("TypeSelectionMenu").GetComponent<GraphicRaycaster>().enabled = false;
+        }
 
         switch (typeGame)
         {
@@ -383,7 +386,10 @@ public class Login : MonoBehaviour
         UnityWebRequest www = UnityWebRequest.Post("http://18.116.223.113/api/game", form);
         yield return www.SendWebRequest();
 
-        GameObject.Find("TypeSelectionMenu").GetComponent<GraphicRaycaster>().enabled = true;
+        if (typeGame != "custom")
+        {
+            GameObject.Find("TypeSelectionMenu").GetComponent<GraphicRaycaster>().enabled = true;
+        }
 
         if (www.isNetworkError)
         {
