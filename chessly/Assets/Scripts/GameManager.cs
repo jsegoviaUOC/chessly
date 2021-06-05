@@ -51,10 +51,18 @@ public class GameManager : MonoBehaviour
     // indicador de si la partida és online
     public static bool isOnline;
     public static int idGame;
+    public static int idCreator;
+
+    // panel negre per fer l'efecte del fade
+    public GameObject fadePanel;
 
     // S'executa al iniciar l'escena
     void Start()
     {
+        fadePanel = GameObject.Find("FadePanelCanvas");
+
+        StartCoroutine(FadeOuting());
+
         // Carrega les opcions sel·leccionades
         OptionsData();
 
@@ -72,6 +80,9 @@ public class GameManager : MonoBehaviour
     { 
         // Creació del tauler
         mBoard.Create(xAxis, yAxis);
+
+        mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(380 - (xMargin * 80), mBoard.GetComponent<RectTransform>().offsetMin.y);
+        mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(mBoard.GetComponent<RectTransform>().offsetMin.x, 120 + (8 - yAxis) * 40);
 
         // Creació de les peces
         mPieceManager.Setup(mBoard);
@@ -265,17 +276,7 @@ public class GameManager : MonoBehaviour
     // Retorn al menu principal
     public void BackMenu()
     {
-        if (isOnline)
-        {
-            // Carrega la escena de Login
-            SendExitGame();
-            SceneManager.LoadScene("Login");
-        }
-        else
-        {
-            // Carrega la escena del menu principal
-            SceneManager.LoadScene("Main Menu");
-        }
+        StartCoroutine(FadeInning());
     }
 
     private void SetClassicPieces()
@@ -353,6 +354,48 @@ public class GameManager : MonoBehaviour
 
     }
 
+    /* FUNCIONS FADE IN/OUT */
+
+    public IEnumerator FadeOuting()
+    {
+        for (float f = 2f; f >= 0f; f -= 0.09f)
+        {
+            Color c = fadePanel.GetComponent<Image>().color;
+            c.a = f;
+            fadePanel.GetComponent<Image>().color = c;
+
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        fadePanel.GetComponent<Canvas>().enabled = false;
+    }
+
+    public IEnumerator FadeInning()
+    {
+        fadePanel.GetComponent<Canvas>().enabled = true;
+
+        for (float f = 0.05f; f <= 2f; f += 0.09f)
+        {
+            Color c = fadePanel.GetComponent<Image>().color;
+            c.a = f;
+            fadePanel.GetComponent<Image>().color = c;
+
+            yield return new WaitForSeconds(0.01f);
+        }
+        
+        if (isOnline)
+        {
+            // Carrega la escena de Login
+            SendExitGame();
+            SceneManager.LoadScene("Login");
+        }
+        else
+        {
+            // Carrega la escena del menu principal
+            SceneManager.LoadScene("Main Menu");
+        }
+    }
+
     /* FUNCIONS GAME ONLINE */
 
     public void SendExitGame()
@@ -372,6 +415,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            Debug.Log(www.downloadHandler.text);
             var json = JsonUtility.FromJson<OnlineGameData>(www.downloadHandler.text);
 
             xAxis = json.data.xAxis;
@@ -393,6 +437,8 @@ public class GameManager : MonoBehaviour
 
                 matrixPieces[int.Parse(infoPiece[0]), int.Parse(infoPiece[1])] = vP;
             }
+
+            idCreator = json.data.creatorId;
 
             if (json.data.colorCreator == "B")
             {

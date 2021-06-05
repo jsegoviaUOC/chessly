@@ -36,9 +36,16 @@ public class EditorManager : MonoBehaviour
 
     public static VoidPiece[,] matrixPiecesEditor;
 
+    // panel negre per fer l'efecte del fade
+    public GameObject fadePanel;
+
     // S'executa al iniciar l'escena
     void Start()
     {
+        fadePanel = GameObject.Find("FadePanelCanvas");
+
+        StartCoroutine(FadeOuting());
+
         // Carrega les opcions sel·leccionades
         OptionsData();
 
@@ -61,7 +68,7 @@ public class EditorManager : MonoBehaviour
 
         // Es cetra el board en la pantalla
         mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(480 - (xMargin * 80), mBoard.GetComponent<RectTransform>().offsetMin.y);
-        mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(mBoard.GetComponent<RectTransform>().offsetMin.x, 60 + (8 - yAxis) * 40);
+        mBoard.GetComponent<RectTransform>().offsetMin = new Vector2(mBoard.GetComponent<RectTransform>().offsetMin.x, 120 + (8 - yAxis) * 40);
 
         // Creació del tauler
         mBoard.Create(xAxis, yAxis);
@@ -96,7 +103,7 @@ public class EditorManager : MonoBehaviour
     public void BackMenu()
     {
         // Carrega la escena del menu principal
-        SceneManager.LoadScene("Main Menu");
+        StartCoroutine(FadeInning("main menu"));
     }
 
     // Canvia l'aspecte del button seleccionat
@@ -201,7 +208,7 @@ public class EditorManager : MonoBehaviour
         }
         else
         {
-            Game();
+            StartCoroutine(FadeInning("game"));
         }
     }
 
@@ -227,4 +234,46 @@ public class EditorManager : MonoBehaviour
         }
     }
 
+
+    /* FUNCIONS FADE IN/OUT */
+
+    public IEnumerator FadeOuting()
+    {
+        fadePanel.GetComponent<Canvas>().enabled = true;
+        for (float f = 2f; f >= 0f; f -= 0.09f)
+        {
+            Color c = fadePanel.GetComponent<Image>().color;
+            c.a = f;
+            fadePanel.GetComponent<Image>().color = c;
+
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        fadePanel.GetComponent<Canvas>().enabled = false;
+    }
+
+    public IEnumerator FadeInning(string typeButton)
+    {
+        fadePanel.GetComponent<Canvas>().enabled = true;
+
+        for (float f = 0.05f; f <= 2f; f += 0.09f)
+        {
+            Color c = fadePanel.GetComponent<Image>().color;
+            c.a = f;
+            fadePanel.GetComponent<Image>().color = c;
+
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        if (typeButton == "game")
+        {
+            // S'inicia el joc
+            Game();
+        }
+        else
+        {
+            // S'inicia l'escena del joc
+            SceneManager.LoadScene("Main Menu");
+        }
+    }
 }

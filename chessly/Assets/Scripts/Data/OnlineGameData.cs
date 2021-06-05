@@ -15,7 +15,9 @@ public class DataGame
     public int xAxis;
     public int yAxis;
     public int creatorId;
-    public int playerId;
+    public string creatorName;
+    public int visitorId;
+    public string visitorName;
     public int winnerId;
     public string type;
     public string colorCreator;

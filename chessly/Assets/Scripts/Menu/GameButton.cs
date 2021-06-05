@@ -16,8 +16,24 @@ public class GameButton : MonoBehaviour
     public const string path = "Data";
     public const string optionsFileName = "options";
 
+    public GameObject fadePanel;
+    public bool firstTime = true;
+
     public void Start()
     {
+        fadePanel = GameObject.Find("FadePanelCanvas");
+
+        if (!firstTime)
+        {
+            StartCoroutine(FadeOuting());
+        }
+        else
+        {
+            fadePanel.GetComponent<Canvas>().enabled = false;
+        }
+
+        firstTime = false;
+
         // Deshabilita el menú d'opcions
         GameObject.Find("OptionsMenu").GetComponent<Canvas>().enabled = false;
 
@@ -34,8 +50,7 @@ public class GameButton : MonoBehaviour
         // S'inicialitza el tipus de partida
         typeGame = type;
 
-        // S'inicia l'escena del joc
-        SceneManager.LoadScene("Game");
+        StartCoroutine(FadeInning("game"));
     }
 
     // Inici de l'editor de taulers
@@ -44,8 +59,7 @@ public class GameButton : MonoBehaviour
         // S'inicialitza el tipus de partida
         typeGame = type;
 
-        // S'inicia l'escena del joc
-        SceneManager.LoadScene("BoardEditor");
+        StartCoroutine(FadeInning("editor"));
     }
 
     // funció per tancar le joc
@@ -268,6 +282,47 @@ public class GameButton : MonoBehaviour
             default:
                 return new Color32(255, 255, 255, 255);
         }
+    }
 
+    /* FUNCIONS FADE IN/OUT */
+
+    public IEnumerator FadeOuting()
+    {
+        fadePanel.GetComponent<Canvas>().enabled = true;
+        for (float f = 2f; f >= 0f; f -= 0.09f)
+        {
+            Color c = fadePanel.GetComponent<Image>().color;
+            c.a = f;
+            fadePanel.GetComponent<Image>().color = c;
+
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        fadePanel.GetComponent<Canvas>().enabled = false;
+    }
+    
+    public IEnumerator FadeInning(string typeButton)
+    {
+        fadePanel.GetComponent<Canvas>().enabled = true;
+
+        for (float f = 0.05f; f <= 2f; f += 0.09f)
+        {
+            Color c = fadePanel.GetComponent<Image>().color;
+            c.a = f;
+            fadePanel.GetComponent<Image>().color = c;
+
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        if (typeButton == "game")
+        {
+            // S'inicia l'escena del joc
+            SceneManager.LoadScene("Game");
+        }
+        else
+        {
+            // S'inicia l'escena del joc
+            SceneManager.LoadScene("BoardEditor");
+        }
     }
 }

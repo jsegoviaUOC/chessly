@@ -9,12 +9,12 @@ public class King : BasePiece
     private Tower mRightTower = null;
 
     // Valor assignat per matar aquesta peça
-    public int price = 8;
+    new public int price = 8;
 
-    public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager)
+    public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager, GameObject newSoundMove, GameObject newSoundDead)
     {
         // Inicialització de la peça
-        base.Setup(newTeamColor, newSpriteColor, newPieceManager);
+        base.Setup(newTeamColor, newSpriteColor, newPieceManager, newSoundMove, newSoundDead);
 
         // Moviments
         mMovement = new Vector3Int(1, 1, 1);
@@ -28,7 +28,7 @@ public class King : BasePiece
     {
         if (GameManager.isOnline)
         {
-            StartCoroutine(SetWinner());
+            StartCoroutine(PieceManager.SetWinner());
         }
 
         base.Kill();
@@ -145,23 +145,4 @@ public class King : BasePiece
         return tower;
     }
 
-
-    // funció per a assignar un guanyador online
-    public IEnumerator SetWinner()
-    {
-        WWWForm form = new WWWForm();
-        form.AddField("winner_id", Login.idPlayer);
-
-        UnityWebRequest www = UnityWebRequest.Post("http://18.116.223.113/api/game/" + GameManager.idGame + "/set-winner/" + Login.idPlayer, form);
-        yield return www.SendWebRequest();
-
-        if (www.isNetworkError)
-        {
-            Debug.Log(www.error);
-        }
-        else
-        {
-            Debug.Log(www.downloadHandler.text);
-        }
-    }
 }

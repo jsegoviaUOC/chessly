@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 223675758632795112}
   - component: {fileID: 114046379163009272}
   m_Layer: 0
-  m_Name: PR_PieceManager
+  m_Name: PrefPieceManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50,9 +50,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fcd90cdca354ab46a77b8054714fb4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mIsKingAlive: 1
+  isEndGame: 0
   mPiecePrefab: {fileID: 1574190171488166, guid: 93dfeb80f6c521542a105fd2b48cf014,
     type: 3}
+  soundMove: {fileID: 6193294825194768141, guid: 02538652fefc74641970275f1f3d76ea,
+    type: 3}
+  soundDead: {fileID: 1303352448862422338, guid: 6e3f3e026a0d9b045b98a02f684effc0,
+    type: 3}
+  textDisplayCanvas: {fileID: 0}
+  currentColor: {r: 0, g: 0, b: 0, a: 0}
+  NPColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!223 &223675758632795112
 Canvas:
   m_ObjectHideFlags: 0

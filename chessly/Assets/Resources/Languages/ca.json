@@ -26,9 +26,9 @@
 		},
 		"general" : {
 			"OnePlayerText" : "Un Jugador",
-			"ClassicNPButton" : "Joc Clàssic\ncontra el PC",
-			"NonClassicNPButton" : "Joc a l'Atzar\ncontra el PC",
-			"EditorNPButton" : "Editor de tauler\ncontra el PC",
+			"ClassicNPButton" : "Joc Clàssic\ncontra en Dummy",
+			"NonClassicNPButton" : "Joc a l'Atzar\ncontra en Dummy",
+			"EditorNPButton" : "Editor de tauler\ncontra en Dummy",
 			"TwoPlayersText" : "Dos Jugadors",
 			"ClassicButton" : "Joc Clàssic",
 			"NonClassicButton" : "Joc a l'Atzar",
@@ -42,12 +42,32 @@
 			"PlaceholderUsername" : "Introdueix el nom d'usuari",
 			"LabelPassword" : "Contrasenya:",
 			"PlaceholderPassword" : "Introdueix la contrasenya",
-			"SignInButton" : "Iniciar Sessió",
-			"SignUpButton" : "Registrar-se",
-			"failLogin" : "Error en l'inici\nde sessió :(",
-			"successLogin" : "Inici de sessió correcte!",
-			"failCreateUser" : "aquest usuari ja existeix.\nCanvia el nom d'usuari",
-			"nullValues" : "Siusplau introdueixi els valors"
+			"FailLogin" : "Error en l'inici\nde sessió :(",
+			"SuccessLogin" : "Inici de sessió correcte!",
+			"FailCreateUser" : "aquest usuari ja existeix.\nCanvia el nom d'usuari",
+			"NullValues" : "Siusplau introdueixi els valors",
+			"NotGame" : "Actualment no hay partides obertes\nd'aquest estil de joc",
+			"buttons" : {
+				"SignInButton" : "Iniciar Sessió",
+				"SignUpButton" : "Registrar-se",
+				"SearchGameButton" : "Buscar Partida",
+				"CreateGameButton" : "Crear Partida",
+				"StatisticsButton" : "Estadístiques",
+				"LogOutButton" : "Tancar Sessió",
+				"ClassicGameButton" : "Partida Clássica",
+				"CustomGameButton" : "Partida Personalitzada",
+				"BackToSelectButton" : "Tornar"
+			},
+			"statistics" : {
+				"TotalWinsLabel" : "Victories Totals:",
+				"CreatedGamesLabel" : "Partides Creades",
+				"SearchedGamesLabel" : "Partides Cercades:",
+				"ColorPiecesLabel" : "Color de Peces:",
+				"TotalMovesLabel" : "Moviments Totals:",
+				"TotalWinsValue" : "Partides Totals",
+				"Classics" : "Clàssiques",
+				"Customs" : "Person."
+			}
 		}
 	},
 	"game" : {
@@ -60,13 +80,19 @@
 			"WinWhiteText" : "Felicitats jugador blanc!\n Has guanyat",
 			"WinBlackText" : "Felicitats jugador negre!\n Has guanyat",
 			"TurnWhiteText" : "És el torn del\n jugador blanc",
-			"TurnBlackText" : "És el torn del\n jugador negre"
+			"TurnBlackText" : "És el torn del\n jugador negre",
+			"WaitingText" : "Esperant...",
+			"WaitingLongText" : "Esperant l'altre jugador",
+			"VictoryOnlineText" : "Felicitats! Has guanyat!",
+			"LoseOnlineText" : "Has perdut! Mala sort :("
 		}
 	},
 	"editor" : {
 		"info" : {
 			"PieceButtonsTitle" : "Tria Peça:",
-			"ColorButtonsTitle" : "Tria Color:"
+			"ColorButtonsTitle" : "Tria Color:",
+			"WhitePlayerText" : "Zona del jugador blanc",
+			"BlackPlayerText" : "Zona del jugador negre"
 		},
 		"buttons" : {
 			"ReturnButton" : "Tornar al Menú",

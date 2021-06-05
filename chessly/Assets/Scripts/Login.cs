@@ -22,6 +22,7 @@ public class Login : MonoBehaviour
     public static int idNewGame;
 
     public static int idPlayer = 0;
+    public static string namePlayer = "";
 
     // Objecte per gestionar les traduccions
     public static LanguagesData languageData;
@@ -44,6 +45,7 @@ public class Login : MonoBehaviour
         }
 
         GameObject.Find("TypeSelectionMenu").GetComponent<Canvas>().enabled = false;
+        GameObject.Find("StatisticsMenu").GetComponent<Canvas>().enabled = false;
 
         GameObject.Find("ResponseLoginDisplayerCanvas").GetComponent<Canvas>().enabled = false;
 
@@ -67,6 +69,18 @@ public class Login : MonoBehaviour
 
         // Obre el menú d'opcions
         GameObject.Find("SelectMenu").GetComponent<Canvas>().enabled = true;
+    }
+
+    // funció per accedir al menu d'opcions
+    public void StatisticsMenu()
+    {
+        StartCoroutine(GetStatistics());
+
+        // Tanca el menú d'opcions
+        GameObject.Find("SelectMenu").GetComponent<Canvas>().enabled = false;
+
+        // Obre les estadistiques
+        GameObject.Find("StatisticsMenu").GetComponent<Canvas>().enabled = true;
     }
 
     // Funció per actualitzar el valor del username
@@ -127,24 +141,24 @@ public class Login : MonoBehaviour
 
     public void ShowLoginText()
     {
-        GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.failLogin;
+        GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.FailLogin;
 
         if (isLogin != 0)
         {
 
-            GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.successLogin;
+            GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.SuccessLogin;
         }
 
         if (ifExsist != 0)
         {
 
-            GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.failCreateUser;
+            GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.FailCreateUser;
         }
 
         if (nullValues != 0)
         {
             nullValues = 0;
-            GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.nullValues;
+            GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.NullValues;
         }
 
         GameObject.Find("ResponseLoginDisplayerCanvas").GetComponent<Canvas>().enabled = true;
@@ -176,6 +190,7 @@ public class Login : MonoBehaviour
         // es mostra el menú de selecció
         GameObject.Find("SelectMenu").GetComponent<Canvas>().enabled = true;
         GameObject.Find("TypeSelectionMenu").GetComponent<Canvas>().enabled = false;
+        GameObject.Find("StatisticsMenu").GetComponent<Canvas>().enabled = false;
 
         // esborra la selecció
         selection = 0;
@@ -218,6 +233,7 @@ public class Login : MonoBehaviour
     public void LogOut()
     {
         isLogin = 0;
+        idPlayer = 0;
         // Recarrega l'escena
         SceneManager.LoadScene("Login");
     }
@@ -246,6 +262,7 @@ public class Login : MonoBehaviour
             isLogin = int.Parse(www.downloadHandler.text);
 
             idPlayer = isLogin;
+            namePlayer = username;
 
             SelectMenu();
             ShowLoginText();
@@ -276,6 +293,7 @@ public class Login : MonoBehaviour
                 ifExsist = 0;
 
                 idPlayer = isLogin;
+                namePlayer = username;
             }
             else
             {
@@ -295,6 +313,8 @@ public class Login : MonoBehaviour
 
         int randColor = UnityEngine.Random.Range(0, 2);
         string creatorColor = randColor == 1 ? "W" : "B";
+        
+        GameObject.Find("TypeSelectionMenu").GetComponent<GraphicRaycaster>().enabled = false;
 
         switch (typeGame)
         {
@@ -363,6 +383,8 @@ public class Login : MonoBehaviour
         UnityWebRequest www = UnityWebRequest.Post("http://18.116.223.113/api/game", form);
         yield return www.SendWebRequest();
 
+        GameObject.Find("TypeSelectionMenu").GetComponent<GraphicRaycaster>().enabled = true;
+
         if (www.isNetworkError)
         {
             Debug.Log(www.error);
@@ -383,12 +405,15 @@ public class Login : MonoBehaviour
     //Funció per a crear l'usuari
     public IEnumerator AddUserToGame(string typeGame)
     {
+        GameObject.Find("TypeSelectionMenu").GetComponent<GraphicRaycaster>().enabled = false;
         WWWForm form = new WWWForm();
         
         form.AddField("type", typeGame);
 
         UnityWebRequest www = UnityWebRequest.Post("http://18.116.223.113/api/connect-to-game/"+idPlayer, form);
         yield return www.SendWebRequest();
+
+        GameObject.Find("TypeSelectionMenu").GetComponent<GraphicRaycaster>().enabled = true;
 
         if (www.isNetworkError)
         {
@@ -408,9 +433,30 @@ public class Login : MonoBehaviour
             }
             else
             {
-                GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Actualment no hay partides obertes\nd'aquest estil de joc";
+                GameObject.Find("ResponseLoginDisplayerCanvas").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.menu.login.NotGame;
                 GameObject.Find("ResponseLoginDisplayerCanvas").GetComponent<Canvas>().enabled = true;
             }
+        }
+    }
+
+    public IEnumerator GetStatistics()
+    {
+        UnityWebRequest www = UnityWebRequest.Get("http://18.116.223.113/api/statistics/" + idPlayer);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            var json = JsonUtility.FromJson<OnlineStatisticsData>(www.downloadHandler.text);
+
+            GameObject.Find("TotalWinsValue").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = json.wins + " / " + json.totalGames + " " + languageData.menu.login.statistics.TotalWinsValue;
+            GameObject.Find("CreatedGamesValue").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = json.creatorClassic + " " + languageData.menu.login.statistics.Classics + " / " + json.creatorCustom + " " + languageData.menu.login.statistics.Customs;
+            GameObject.Find("SearchedGamesValue").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = json.visitorClassic + " " + languageData.menu.login.statistics.Classics + " / " + json.visitorCustom + " " + languageData.menu.login.statistics.Customs;
+            GameObject.Find("ColorPiecesValue").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = json.statisticsWhite +"% " + languageData.colors.White + " / "+ json.statisticsBlack + "% " + languageData.colors.Black;
+            GameObject.Find("TotalMovesValue").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = json.totalMoves.ToString();
         }
     }
 }

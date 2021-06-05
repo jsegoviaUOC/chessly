@@ -5,6 +5,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PieceManager : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class PieceManager : MonoBehaviour
 
     // Prefab de les peces
     public GameObject mPiecePrefab;
+    public GameObject soundMove;
+    public GameObject soundDead;
 
     // Recuadre de text amb informació de la partida
     public GameObject textDisplayCanvas;
@@ -34,8 +37,6 @@ public class PieceManager : MonoBehaviour
     private List<string> mWhitePiecesOrder;
     private List<string> mBlackPiecesOrder;
     private List<string> mAuxiliarPiecesOrder;
-
-    private int gameStatus = 0;
 
     // Creació d'un diccionari per relacionar l'array de peces amb el tipus de peça
     private Dictionary<string, Type> mPieceLibrary = new Dictionary<string, Type>()
@@ -59,7 +60,33 @@ public class PieceManager : MonoBehaviour
 
     // Boolean per a gestionar el torn online
     private bool yourTurn;
+    private int gameStatus = 0;
+    private float timer = 300.0f;
+    private bool stopTimer = false;
 
+    // S'utilitzat la funció update per al contador de temps del joc online
+    public void Update()
+    {
+        if (GameManager.isOnline && gameStatus==2)
+        {
+            timer -= Time.deltaTime;
+            int intTimer = timer > 0f ? (int)timer : 0;
+            GameObject.Find("Timer").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "" + (int)timer;
+
+            if (timer < 0f && !stopTimer)
+            {
+                stopTimer = true;
+                if (yourTurn)
+                {
+                    StartCoroutine(GameManager.ExitGame());
+                }
+                else
+                {
+                    StartCoroutine(SetWinner());
+                }
+            }
+        }
+    }
     public void Setup(Board board)
     {
         // S'assigna el tauler
@@ -67,6 +94,9 @@ public class PieceManager : MonoBehaviour
 
         // Recull els textos traduits
         languageData = LanguageManager.getLanguageText();
+
+        Color32 whiteColor = GameManager.getColor(GameManager.optionsData.colors.whitePiecesColor);
+        Color32 blackColor = GameManager.getColor(GameManager.optionsData.colors.blackPiecesColor);
 
         // Llistat de peces incials de cada color
         for (int i = 0; i < Board.xLimit; i++)
@@ -86,20 +116,20 @@ public class PieceManager : MonoBehaviour
                     if (vPiece.color == "W")
                     {
                         teamColor = Color.white;
-                        spriteColor = GameManager.getColor(GameManager.optionsData.colors.whitePiecesColor);
+                        spriteColor = whiteColor;
 
                         mWhitePieces.Add(newPiece);
                     }
                     else
                     {
                         teamColor = Color.black;
-                        spriteColor = GameManager.getColor(GameManager.optionsData.colors.blackPiecesColor);
+                        spriteColor = blackColor;
 
                         mBlackPieces.Add(newPiece);
                     }
 
                     // S'inicialitza la peça amb el seu color i l'equip al que pertany
-                    newPiece.Setup(teamColor, spriteColor, this);
+                    newPiece.Setup(teamColor, spriteColor, this, soundMove, soundDead);
 
                     newPiece.Place(board.mAllCells[i, j]);
                 }
@@ -110,6 +140,10 @@ public class PieceManager : MonoBehaviour
         {
             currentColor = Color.white;
             StartCoroutine(GetGameStatus(GameManager.idGame));
+
+            GameObject.Find("ColorPlayer1").GetComponent<Image>().color = whiteColor;
+            GameObject.Find("ColorPlayer2").GetComponent<Image>().color = blackColor;
+
             SetOnlineGame();
         }
         else
@@ -117,6 +151,7 @@ public class PieceManager : MonoBehaviour
             // Inici del torn de les blanques
             currentColor = Color.black;
             GameObject.Find("CanvasExitButton").GetComponent<Canvas>().enabled = false;
+            GameObject.Find("UsersDisplayerCanvas").GetComponent<Canvas>().enabled = false;
             SwitchPlayer();
         }
     }
@@ -255,7 +290,7 @@ public class PieceManager : MonoBehaviour
         // Es crea la peça promocionada
         // Per simplificar l'algoritme, de moment només es promociona a Reina
         BasePiece promotedPiece = CreatePiece(typeof(Queen));
-        promotedPiece.Setup(teamColor, spriteColor, this);
+        promotedPiece.Setup(teamColor, spriteColor, this, soundMove, soundDead);
 
         // Es posiciona en el tauler la peça
         promotedPiece.Place(cell);
@@ -275,9 +310,12 @@ public class PieceManager : MonoBehaviour
         // Si el joc ha acabat el text que es mostra és diferent
         if (isEndGame)
         {
-            string winText = currentColor == Color.white ? languageData.game.info.WinWhiteText : languageData.game.info.WinBlackText;
-            textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = winText;
-            GameObject.Find("QuitTextButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.NewGameButton;
+            if (!GameManager.isOnline)
+            {
+                string winText = currentColor == Color.white ? languageData.game.info.WinWhiteText : languageData.game.info.WinBlackText;
+                textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = winText;
+                GameObject.Find("QuitTextButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.NewGameButton;
+            }
         }
         else
         {
@@ -289,6 +327,7 @@ public class PieceManager : MonoBehaviour
         {
             yourTurn = false;
             ToggleOnlinePieces(false);
+            timer = 300.0f;
         }
 
         // Es mostra el recuadre d'informació
@@ -347,8 +386,6 @@ public class PieceManager : MonoBehaviour
         int index = 0;
         int indexBestPiece = 0;
 
-        //Random rng = new Random();
-
         int n = nonPlayerMoveOptions.Count;
         while (n > 1)
         {
@@ -385,11 +422,13 @@ public class PieceManager : MonoBehaviour
         if (GameManager.yourColor == Color.white)
         {
             yourTurn = true;
+            GameObject.Find("Player1").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = Login.namePlayer;
             ChangeStateActivePieces(mWhitePieces, true);
         }
         else
         {
             yourTurn = false;
+            GameObject.Find("Player2").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = Login.namePlayer;
             ChangeStateActivePieces(mWhitePieces, false);
         }
         ChangeStateActivePieces(mBlackPieces, false);
@@ -400,11 +439,25 @@ public class PieceManager : MonoBehaviour
         List<BasePiece> pieces = GameManager.yourColor == Color.white ? mWhitePieces : mBlackPieces;
 
         ChangeStateActivePieces(pieces, state);
+
+        foreach (BasePiece piece in mPromotedPieces)
+        {
+            if (piece.mColor == GameManager.yourColor)
+            {
+                piece.enabled = state;
+            }
+            else
+            {
+                piece.enabled = false;
+            }
+        }
     }
 
     public void ExitButton()
     {
         StartCoroutine(GameManager.ExitGame());
+
+        SceneManager.LoadScene("Login");
     }
 
     // Funció que controla el flux del joc online
@@ -414,17 +467,26 @@ public class PieceManager : MonoBehaviour
         GameObject.Find("ButtonSpace").GetComponent<Canvas>().enabled = false;
 
         // Es mostra un cartell d'esperant contrincant
-        textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "waiting other player";
+        textDisplayCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.info.WaitingLongText;
         textDisplayCanvas.GetComponent<Canvas>().enabled = true;
-        GameObject.Find("CanvasQuitButton").GetComponent<Canvas>().enabled = false;
-        GameObject.Find("ExitButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.ReturnButton;
         GameObject.Find("CanvasExitButton").GetComponent<Canvas>().enabled = true;
+        GameObject.Find("ExitButton").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = languageData.game.buttons.ReturnButton;
 
         while (gameStatus != 1) // Mentre no hi hagi un contrincant
         {
-            yield return new WaitForSeconds(8);
+            yield return new WaitForSeconds(5);
             StartCoroutine(GetStatus(idGame));
         }
+
+        if (Login.idPlayer != GameManager.idCreator)
+        {
+            StartCoroutine(GetNameUser(idGame, "creator"));
+        }
+        else
+        {
+            StartCoroutine(GetNameUser(idGame, "visitor"));
+        }
+
 
         // Es treu el cartell d'espra de contrincant i s'habiliten els botons
         GameObject.Find("ButtonSpace").GetComponent<Canvas>().enabled = true;
@@ -434,7 +496,7 @@ public class PieceManager : MonoBehaviour
 
         while (gameStatus != 2) // Mentre no hi hagi un guanyador
         {
-            yield return new WaitForSeconds(10);
+            yield return new WaitForSeconds(5);
             StartCoroutine(GetStatus(idGame));
 
             if (!yourTurn)
@@ -442,6 +504,8 @@ public class PieceManager : MonoBehaviour
                 StartCoroutine(GetLastMove(idGame));
             }
         }
+
+        timer = 300.0f;
 
         StartCoroutine(GetWinner(idGame));
     }
@@ -478,8 +542,7 @@ public class PieceManager : MonoBehaviour
             {
                 var jsonMove = JsonUtility.FromJson<OnlineMoveData>(www.downloadHandler.text);
 
-                //if (jsonMove.data.playerId != Login.idPlayer && !yourTurn)
-                if (jsonMove.data.playerId != 1 && !yourTurn)
+                if (jsonMove.data.playerId != Login.idPlayer && !yourTurn)
                 {
                     // Moviment del contrincant online
                     Cell currentCell = mBoard.mAllCells[jsonMove.data.xCurrent, jsonMove.data.yCurrent];
@@ -488,10 +551,10 @@ public class PieceManager : MonoBehaviour
 
                     ToggleOnlinePieces(true);
                     yourTurn = true;
+                    timer = 300.0f;
                 }
             }
         }
-
     }
 
     public IEnumerator GetWinner(int idGame)
@@ -514,11 +577,11 @@ public class PieceManager : MonoBehaviour
 
             if (json.data.winnerId != Login.idPlayer)
             {
-                winnerText = "Sorry, You lose :(";
+                winnerText = languageData.game.info.LoseOnlineText;
             }
             else
             {
-                winnerText = "Congratulations! You win!";
+                winnerText = languageData.game.info.VictoryOnlineText;
             }
 
             // Es deshabiliten els botons
@@ -530,4 +593,44 @@ public class PieceManager : MonoBehaviour
         }
     }
 
+    public IEnumerator GetNameUser(int idGame, string user)
+    {
+        UnityWebRequest www = UnityWebRequest.Get("http://18.116.223.113/api/game/" + idGame + "/username?user="+user);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            if (GameManager.yourColor == Color.white)
+            {
+                GameObject.Find("Player2").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = www.downloadHandler.text;
+            }
+            else
+            {
+                GameObject.Find("Player1").GetComponentInChildren<TMPro.TextMeshProUGUI>().text = www.downloadHandler.text;
+            }
+        }
+    }
+
+    // funció per a assignar un guanyador online
+    public static IEnumerator SetWinner()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("winner_id", Login.idPlayer);
+
+        UnityWebRequest www = UnityWebRequest.Post("http://18.116.223.113/api/game/" + GameManager.idGame + "/set-winner/" + Login.idPlayer, form);
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            Debug.Log(www.downloadHandler.text);
+        }
+    }
 }

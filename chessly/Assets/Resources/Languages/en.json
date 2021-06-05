@@ -26,9 +26,9 @@
 		},
 		"general" : {
 			"OnePlayerText" : "One Player",
-			"ClassicNPButton" : "Classic Game\n vs Computer",
-			"NonClassicNPButton" : "Random Game\n vs Computer",
-			"EditorNPButton" : "Edit Board\n vs Computer",
+			"ClassicNPButton" : "Classic Game\n vs Dummy",
+			"NonClassicNPButton" : "Random Game\n vs Dummy",
+			"EditorNPButton" : "Edit Board\n vs Dummy",
 			"TwoPlayersText" : "Two Players",
 			"ClassicButton" : "Classic Game",
 			"NonClassicButton" : "Random Game",
@@ -42,12 +42,32 @@
 			"PlaceholderUsername" : "Enter username",
 			"LabelPassword" : "Password:",
 			"PlaceholderPassword" : "Enter password",
-			"SignInButton" : "Sign In",
-			"SignUpButton" : "Sign Up",
-			"failLogin" : "Fail login :(",
-			"successLogin" : "Login succes!",
-			"failCreateUser" : "This user already exist.\nChange username",
-			"nullValues" : "Please enter the values"
+			"FailLogin" : "Fail login :(",
+			"SuccessLogin" : "Login succes!",
+			"FailCreateUser" : "This user already exist.\nChange username",
+			"NullValues" : "Please enter the values",
+			"NotGame" : "There are currently no open\ngames of this style of play",
+			"buttons" : {
+				"SignInButton" : "Sign In",
+				"SignUpButton" : "Sign Up",
+				"SearchGameButton" : "Search Game",
+				"CreateGameButton" : "Create Game",
+				"StatisticsButton" : "Statistics",
+				"LogOutButton" : "Log Out",
+				"ClassicGameButton" : "Classic Game",
+				"CustomGameButton" : "Custom Game",
+				"BackToSelectButton" : "Back"
+			},
+			"statistics" : {
+				"TotalWinsLabel" : "Total wins:",
+				"CreatedGamesLabel" : "Created games:",
+				"SearchedGamesLabel" : "Searched games:",
+				"ColorPiecesLabel" : "Color pieces:",
+				"TotalMovesLabel" : "Total moves:",
+				"TotalWinsValue" : "Total Games",
+				"Classics" : "Classics",
+				"Customs" : "Customs"
+			}
 		}
 	},
 	"game" : {
@@ -60,13 +80,19 @@
 			"WinWhiteText" : "Congratulations white player!\nYou Win",
 			"WinBlackText" : "Congratulations black player!\nYou Win",
 			"TurnWhiteText" : "Is white player's turn",
-			"TurnBlackText" : "Is black player's turn"
+			"TurnBlackText" : "Is black player's turn",
+			"WaitingText" : "Waiting...",
+			"WaitingLongText" : "Waiting other player",
+			"VictoryOnlineText" : "Congratulations! You win!",
+			"LoseOnlineText" : "Sorry, You lose :("
 		}
 	},
 	"editor" : {
 		"info": {
 			"PieceButtonsTitle" : "Select Piece:",
-			"ColorButtonsTitle" : "Select Color:"
+			"ColorButtonsTitle" : "Select Color:",
+			"WhitePlayerText" : "White Player Place",
+			"BlackPlayerText" : "Black Player Place"
 		},
 		"buttons" : {
 			"ReturnButton" : "Back to Menu",

@@ -8,12 +8,12 @@ public class Tower : BasePiece
     private Cell mCastlingCell = null;
 
     // Valor assignat per matar aquesta peça
-    public int price = 5;
+    new public int price = 5;
 
-    public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager)
+    public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager, GameObject newSoundMove, GameObject newSoundDead)
     {
         // Inicialització de la peça
-        base.Setup(newTeamColor, newSpriteColor, newPieceManager);
+        base.Setup(newTeamColor, newSpriteColor, newPieceManager, newSoundMove, newSoundDead);
 
         // Moviment
         mMovement = new Vector3Int(13, 13, 0);

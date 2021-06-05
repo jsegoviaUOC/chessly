@@ -33,8 +33,16 @@ public abstract class BasePiece : EventTrigger
 
     protected bool nonPlayerTurnOn = false;
 
+    protected GameObject soundMove;
+    protected GameObject soundDead;
+
+    Vector3 textInitialPosition;
+    Vector3 piecesInitialPosition;
+    Vector3 boardInitialPosition;
+    public float shakeMagnitude = 0.7f, shakeTime = 0.8f;
+
     // Inicialització de la peça
-    public virtual void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager)
+    public virtual void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager, GameObject newSoundMove, GameObject newSoundDead)
     {
         // Gestor de peces
         mPieceManager = newPieceManager;
@@ -43,6 +51,9 @@ public abstract class BasePiece : EventTrigger
         mColor = newTeamColor;
         GetComponent<Image>().color = newSpriteColor;
         mRectTransform = GetComponent<RectTransform>();
+
+        soundMove = newSoundMove;
+        soundDead = newSoundDead;
     }
 
     // Lloc de la peça
@@ -74,6 +85,10 @@ public abstract class BasePiece : EventTrigger
     // Fucnió per eliminar la peça
     public virtual void Kill()
     {
+        ShakeIt();
+
+        Instantiate(soundDead);
+
         // Es borra la informació sobre la cel·la actual que ocupa
         mCurrentCell.mCurrentPiece = null;
 
@@ -183,6 +198,8 @@ public abstract class BasePiece : EventTrigger
     // Funció per moure la peça
     protected virtual void Move()
     {
+        Instantiate(soundMove);
+
         // Es canvia l'estat del primer moviment a false
         mIsFirstMove = false;
 
@@ -300,13 +317,6 @@ public abstract class BasePiece : EventTrigger
         }
 
         return null;
-        // S'escull una cel·la a l'atzar de les possibles
-        //int index = Random.Range(0, mPossiblePathCells.Count);
-
-        //mTargetCell = mPossiblePathCells[index];
-
-        // Es mou la peça
-        //Move();
     }
 
     public void NonPlayerDoMove(Cell target)
@@ -316,6 +326,47 @@ public abstract class BasePiece : EventTrigger
         Move();
 
         nonPlayerTurnOn = false;
+    }
+
+    /* FUNCIÓ SHAKE */
+    public void ShakeIt()
+    {
+        textInitialPosition = GameObject.Find("textDisplayerCanvas").transform.position;
+        piecesInitialPosition = GameObject.Find("PrefPieceManager").transform.position;
+        boardInitialPosition = GameObject.Find("PrefBoard").transform.position;
+        InvokeRepeating("StartShaking", 0f, 0.005f);
+        Invoke("StopShaking", shakeTime);
+    }
+
+    void StartShaking()
+    {
+        float piecesShakingOffsetX = Random.value * shakeMagnitude * 2 - shakeMagnitude;
+        float piecesShakingOffsetY = Random.value * shakeMagnitude * 2 - shakeMagnitude;
+        float boardShakingOffsetX = Random.value * shakeMagnitude * 2 - shakeMagnitude;
+        float boardShakingOffsetY = Random.value * shakeMagnitude * 2 - shakeMagnitude;
+        float textShakingOffsetX = Random.value * shakeMagnitude * 2 - shakeMagnitude;
+        float textShakingOffsetY = Random.value * shakeMagnitude * 2 - shakeMagnitude;
+
+        Vector3 textIntermadiatePosition = GameObject.Find("textDisplayerCanvas").transform.position;
+        Vector3 piecesIntermadiatePosition = GameObject.Find("PrefPieceManager").transform.position;
+        Vector3 boardIntermadiatePosition = GameObject.Find("PrefBoard").transform.position;
+        textIntermadiatePosition.x += textShakingOffsetX;
+        textIntermadiatePosition.y += textShakingOffsetY;
+        piecesIntermadiatePosition.x += piecesShakingOffsetX;
+        piecesIntermadiatePosition.y += piecesShakingOffsetY;
+        boardIntermadiatePosition.x += boardShakingOffsetX;
+        boardIntermadiatePosition.y += boardShakingOffsetY;
+        GameObject.Find("textDisplayerCanvas").transform.position = textIntermadiatePosition;
+        GameObject.Find("PrefPieceManager").transform.position = piecesIntermadiatePosition;
+        GameObject.Find("PrefBoard").transform.position = boardIntermadiatePosition;
+    }
+
+    void StopShaking()
+    {
+        CancelInvoke("StartShaking");
+        GameObject.Find("textDisplayerCanvas").transform.position = textInitialPosition;
+        GameObject.Find("PrefPieceManager").transform.position = piecesInitialPosition;
+        GameObject.Find("PrefBoard").transform.position = boardInitialPosition;
     }
 
     /* FUNCIONS ONLINE GAME */
@@ -336,15 +387,7 @@ public abstract class BasePiece : EventTrigger
         form.AddField("x_target", target.mBoardPosition.x);
         form.AddField("y_target", target.mBoardPosition.y);
         form.AddField("game_id", GameManager.idGame);
-        //form.AddField("player_id", Login.idPlayer);
-        form.AddField("player_id", 1);
-
-       /* Debug.Log("xCur: "+current.mBoardPosition.x);
-        Debug.Log("yCur: " + current.mBoardPosition.y);
-        Debug.Log("xTar: "+ target.mBoardPosition.x);
-        Debug.Log("yTar: " + target.mBoardPosition.y);
-        Debug.Log("idGame: " + GameManager.idGame);
-        Debug.Log("idPlayer: " + Login.idPlayer);*/
+        form.AddField("player_id", Login.idPlayer);
 
         UnityWebRequest www = UnityWebRequest.Post("http://18.116.223.113/api/game/" + GameManager.idGame + "/move", form);
         yield return www.SendWebRequest();

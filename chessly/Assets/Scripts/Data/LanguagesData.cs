@@ -27,12 +27,42 @@ public class LoginMenu
     public string PlaceholderUsername;
     public string LabelPassword;
     public string PlaceholderPassword;
+    public string FailLogin;
+    public string SuccessLogin;
+    public string FailCreateUser;
+    public string NullValues;
+    public string NotGame;
+
+    public LoginButtons buttons;
+    public Statistics statistics;
+}
+
+[System.Serializable]
+public class LoginButtons
+{
     public string SignInButton;
     public string SignUpButton;
-    public string failLogin;
-    public string successLogin;
-    public string failCreateUser;
-    public string nullValues;
+    public string SearchGameButton;
+    public string CreateGameButton;
+    public string StatisticsButton;
+    public string LogOutButton;
+    public string ClassicGameButton;
+    public string CustomGameButton;
+    public string BackToSelectButton;
+
+}
+
+[System.Serializable]
+public class Statistics
+{
+    public string TotalWinsLabel;
+    public string CreatedGamesLabel;
+    public string SearchedGamesLabel;
+    public string ColorPiecesLabel;
+    public string TotalMovesLabel;
+    public string TotalWinsValue;
+    public string Classics;
+    public string Customs;
 }
 
 [System.Serializable]
@@ -114,6 +144,10 @@ public class GameInfo
     public string WinBlackText;
     public string TurnWhiteText;
     public string TurnBlackText;
+    public string WaitingText;
+    public string WaitingLongText;
+    public string VictoryOnlineText;
+    public string LoseOnlineText;
 }
 
 [System.Serializable]
@@ -137,6 +171,8 @@ public class EditorInfo
 {
     public string PieceButtonsTitle;
     public string ColorButtonsTitle;
+    public string WhitePlayerText;
+    public string BlackPlayerText;
 }
 
 [System.Serializable]

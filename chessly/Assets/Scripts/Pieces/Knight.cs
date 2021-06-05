@@ -4,12 +4,12 @@ using UnityEngine.UI;
 public class Knight : BasePiece
 {
     // Valor assignat per matar aquesta peça
-    public int price = 4;
+    new public int price = 4;
 
-    public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager)
+    public override void Setup(Color newTeamColor, Color32 newSpriteColor, PieceManager newPieceManager, GameObject newSoundMove, GameObject newSoundDead)
     {
         // Inicialització de la peça
-        base.Setup(newTeamColor, newSpriteColor, newPieceManager);
+        base.Setup(newTeamColor, newSpriteColor, newPieceManager, newSoundMove, newSoundDead);
 
         // Sprite
         GetComponent<Image>().sprite = Resources.Load<Sprite>("KN_Piece");
